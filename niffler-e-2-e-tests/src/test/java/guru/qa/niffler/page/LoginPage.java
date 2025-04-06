@@ -4,8 +4,8 @@ import com.codeborne.selenide.SelenideElement;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
-import static guru.qa.niffler.data.constants.ApplicationWarnings.LoginWarnings.BAD_CREDENTIALS;
-import static guru.qa.niffler.data.constants.ApplicationWarnings.SignupWarnings.VALIDATION_MESSAGE;
+import static guru.qa.niffler.data.messages.ApplicationWarnings.LoginWarnings.BAD_CREDENTIALS;
+import static guru.qa.niffler.data.messages.ApplicationWarnings.SignupWarnings.VALIDATION_MESSAGE;
 
 public class LoginPage {
     private final String LOGIN_TITLE_TEXT = "Log in";
