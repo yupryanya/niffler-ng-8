@@ -1,9 +1,17 @@
-package guru.qa.niffler.data.randomData;
+package guru.qa.niffler.utils;
 
 import com.github.javafaker.Faker;
 
-public class UserData {
+public class RandomDataUtils {
     private static final Faker faker = new Faker();
+
+    public static String newCategoryName() {
+        return faker.commerce().department() + "-" + java.util.UUID.randomUUID();
+    }
+
+    public static String newDescription() {
+        return faker.commerce().productName() + "-" + java.util.UUID.randomUUID();
+    }
 
     public static String nonExistentUserName() {
         return faker.name().username();
