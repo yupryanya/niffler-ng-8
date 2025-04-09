@@ -1,4 +1,4 @@
-package guru.qa.niffler.data.values;
+package guru.qa.niffler.common.values;
 
 public enum CurrencyValues {
   RUB, USD, EUR, KZT

@@ -1,6 +1,6 @@
 package guru.qa.niffler.jupiter.annotation;
 
-import guru.qa.niffler.data.values.CurrencyValues;
+import guru.qa.niffler.common.values.CurrencyValues;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

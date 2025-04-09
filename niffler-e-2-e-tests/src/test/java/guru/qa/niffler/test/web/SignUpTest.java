@@ -3,7 +3,6 @@ package guru.qa.niffler.test.web;
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.page.SignUpPage;
-import guru.qa.niffler.utils.RandomDataUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -12,7 +11,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static guru.qa.niffler.data.messages.ApplicationWarnings.SignupWarnings.*;
+import static guru.qa.niffler.common.messages.ApplicationWarnings.SignupWarnings.*;
 import static guru.qa.niffler.utils.RandomDataUtils.*;
 
 public class SignUpTest extends BaseTestWeb {
