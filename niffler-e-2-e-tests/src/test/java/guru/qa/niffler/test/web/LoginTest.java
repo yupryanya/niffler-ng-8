@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EmptySource;
 
-import static guru.qa.niffler.data.randomData.UserData.newValidPassword;
-import static guru.qa.niffler.data.randomData.UserData.nonExistentUserName;
+import static guru.qa.niffler.utils.RandomDataUtils.newValidPassword;
+import static guru.qa.niffler.utils.RandomDataUtils.nonExistentUserName;
 
 public class LoginTest extends BaseTestWeb{
     @Test
