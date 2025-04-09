@@ -6,7 +6,7 @@ import guru.qa.niffler.config.Config;
 import static com.codeborne.selenide.Condition.attribute;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
-import static guru.qa.niffler.data.constants.ApplicationWarnings.SignupWarnings.VALIDATION_MESSAGE;
+import static guru.qa.niffler.data.messages.ApplicationWarnings.SignupWarnings.VALIDATION_MESSAGE;
 
 public class SignUpPage {
     protected static final Config CFG = Config.getInstance();

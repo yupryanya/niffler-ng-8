@@ -1,4 +1,4 @@
-package guru.qa.niffler.data.constants;
+package guru.qa.niffler.data.messages;
 
 public class ApplicationWarnings {
     public class SignupWarnings {
