@@ -1,7 +1,7 @@
 package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
-import guru.qa.niffler.data.values.CurrencyValues;
+import guru.qa.niffler.common.values.CurrencyValues;
 import guru.qa.niffler.jupiter.annotation.Spend;
 import guru.qa.niffler.jupiter.annotation.meta.User;
 import guru.qa.niffler.model.SpendJson;
