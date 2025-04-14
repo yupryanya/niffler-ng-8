@@ -1,5 +1,8 @@
 package guru.qa.niffler.common.values;
 
+import lombok.Getter;
+
+@Getter
 public enum AuthorityType {
   READ("read"),
   WRITE("write");
@@ -8,9 +11,5 @@ public enum AuthorityType {
 
   AuthorityType(String value) {
     this.value = value;
-  }
-
-  public String getValue() {
-    return value;
   }
 }
