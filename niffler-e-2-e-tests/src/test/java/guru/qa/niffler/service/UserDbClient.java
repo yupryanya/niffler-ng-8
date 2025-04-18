@@ -7,7 +7,7 @@ import guru.qa.niffler.data.dao.impl.AuthAuthorityDaoJdbc;
 import guru.qa.niffler.data.dao.impl.UserAuthDaoJdbc;
 import guru.qa.niffler.data.dao.impl.UserDataDaoJdbc;
 import guru.qa.niffler.data.entity.auth.AuthAuthorityEntity;
-import guru.qa.niffler.data.entity.auth.UserAuthEntity;
+import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.user.UserDataEntity;
 import guru.qa.niffler.model.UserJson;
 
@@ -36,14 +36,14 @@ public class UserDbClient {
               UserAuthDaoJdbc authDao = new UserAuthDaoJdbc(connection);
               AuthAuthorityDaoJdbc authorityDao = new AuthAuthorityDaoJdbc(connection);
 
-              UUID userId = authDao.createUserAuth(UserAuthEntity.fromJson(user)).getId();
+              UUID userId = authDao.createUserAuth(AuthUserEntity.fromJson(user)).getId();
 
               for (AuthorityType authority : AuthorityType.values()) {
-                AuthAuthorityEntity authAuthority = new AuthAuthorityEntity();
-                authAuthority.setUserId(userId);
-                authAuthority.setAuthority(authority.getValue());
-                authorityDao.createAuthAuthority(authAuthority);
-              }
+                    AuthAuthorityEntity authAuthority = new AuthAuthorityEntity();
+                    authAuthority.setUserId(userId);
+                    authAuthority.setAuthority(authority);
+                    authorityDao.createAuthAuthority(authAuthority);
+                }
             },
             CFG.authJdbcUrl()
         )

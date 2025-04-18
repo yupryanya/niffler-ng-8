@@ -1,7 +1,6 @@
 package guru.qa.niffler.data.dao.impl;
 
 import guru.qa.niffler.common.values.CurrencyValues;
-import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.spend.SpendDao;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
 
@@ -12,8 +11,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class SpendDaoJdbc implements SpendDao {
-  private static final Config CFG = Config.getInstance();
-
   private final Connection connection;
 
   public SpendDaoJdbc(Connection connection) {
@@ -30,7 +27,7 @@ public class SpendDaoJdbc implements SpendDao {
       ps.setString(3, spend.getCurrency().name());
       ps.setDouble(4, spend.getAmount());
       ps.setString(5, spend.getDescription());
-      ps.setObject(6, spend.getCategory().getId());
+      ps.setObject(6, spend.getCategoryId());
 
       ps.executeUpdate();
 
@@ -52,7 +49,7 @@ public class SpendDaoJdbc implements SpendDao {
   @Override
   public Optional<SpendEntity> findSpendById(UUID id) {
     try (PreparedStatement ps = connection.prepareStatement(
-        "SELECT id, username, spend_date, currency, amount, description, category_id FROM spend WHERE id = ?")) {
+        "SELECT * FROM spend WHERE id = ?")) {
       ps.setObject(1, id);
 
       try (ResultSet rs = ps.executeQuery()) {
@@ -64,7 +61,7 @@ public class SpendDaoJdbc implements SpendDao {
           se.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
           se.setAmount(rs.getDouble("amount"));
           se.setDescription(rs.getString("description"));
-          se.setCategory(null);
+          se.setCategoryId(null);
           return Optional.of(se);
         }
       }
@@ -77,21 +74,21 @@ public class SpendDaoJdbc implements SpendDao {
   @Override
   public List<SpendEntity> findAllSpendsByUserName(String userName) {
     try (PreparedStatement ps = connection.prepareStatement(
-        "SELECT id, username, spend_date, currency, amount, description, category_id FROM spend WHERE username = ?")) {
+        "SELECT * FROM spend WHERE username = ?")) {
       ps.setString(1, userName);
 
       try (ResultSet rs = ps.executeQuery()) {
         List<SpendEntity> spends = new ArrayList<>();
         while (rs.next()) {
-          SpendEntity spend = new SpendEntity();
-          spend.setId(rs.getObject("id", UUID.class));
-          spend.setUsername(rs.getString("username"));
-          spend.setSpendDate(rs.getDate("spend_date"));
-          spend.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
-          spend.setAmount(rs.getDouble("amount"));
-          spend.setDescription(rs.getString("description"));
-          spend.setCategory(null);
-          spends.add(spend);
+          SpendEntity se = new SpendEntity();
+          se.setId(rs.getObject("id", UUID.class));
+          se.setUsername(rs.getString("username"));
+          se.setSpendDate(rs.getDate("spend_date"));
+          se.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
+          se.setAmount(rs.getDouble("amount"));
+          se.setDescription(rs.getString("description"));
+          se.setCategoryId(null);
+          spends.add(se);
         }
         return spends;
       }
@@ -108,6 +105,31 @@ public class SpendDaoJdbc implements SpendDao {
       ps.executeUpdate();
     } catch (SQLException e) {
       throw new RuntimeException("Failed to delete spend", e);
+    }
+  }
+
+  @Override
+  public List<SpendEntity> findAll() {
+    try (PreparedStatement ps = connection.prepareStatement(
+        "SELECT * FROM spend")) {
+
+      try (ResultSet rs = ps.executeQuery()) {
+        List<SpendEntity> spends = new ArrayList<>();
+        while (rs.next()) {
+          SpendEntity se = new SpendEntity();
+          se.setId(rs.getObject("id", UUID.class));
+          se.setUsername(rs.getString("username"));
+          se.setSpendDate(rs.getDate("spend_date"));
+          se.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
+          se.setAmount(rs.getDouble("amount"));
+          se.setDescription(rs.getString("description"));
+          se.setCategoryId(null);
+          spends.add(se);
+        }
+        return spends;
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException("Failed to find all spends", e);
     }
   }
 }

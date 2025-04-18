@@ -24,22 +24,21 @@ public record SpendJson(
     @JsonProperty("username")
     String username) {
 
-  public static SpendJson fromEntity(SpendEntity entity) {
-    final CategoryEntity category = entity.getCategory();
-    final String username = entity.getUsername();
+  public static SpendJson fromEntity(SpendEntity spendEntity, CategoryEntity categoryEntity) {
+    final String username = spendEntity.getUsername();
 
     return new SpendJson(
-        entity.getId(),
-        entity.getSpendDate(),
+        spendEntity.getId(),
+        spendEntity.getSpendDate(),
         new CategoryJson(
-            category.getId(),
-            category.getName(),
+            categoryEntity.getId(),
+            categoryEntity.getName(),
             username,
-            category.isArchived()
+            categoryEntity.isArchived()
         ),
-        entity.getCurrency(),
-        entity.getAmount(),
-        entity.getDescription(),
+        spendEntity.getCurrency(),
+        spendEntity.getAmount(),
+        spendEntity.getDescription(),
         username
     );
   }

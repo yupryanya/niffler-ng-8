@@ -4,6 +4,7 @@ import guru.qa.niffler.common.values.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -11,6 +12,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
+@ToString
 public class SpendEntity implements Serializable {
   private UUID id;
   private String username;
@@ -18,7 +20,7 @@ public class SpendEntity implements Serializable {
   private Date spendDate;
   private Double amount;
   private String description;
-  private CategoryEntity category;
+  private UUID categoryId;
 
   public static SpendEntity fromJson(SpendJson json) {
     SpendEntity entity = new SpendEntity();
@@ -28,7 +30,7 @@ public class SpendEntity implements Serializable {
     entity.setSpendDate(new java.sql.Date(json.spendDate().getTime()));
     entity.setAmount(json.amount());
     entity.setDescription(json.description());
-    entity.setCategory(CategoryEntity.fromJson(json.category()));
+    entity.setCategoryId(json.category().id());
     return entity;
   }
 }
