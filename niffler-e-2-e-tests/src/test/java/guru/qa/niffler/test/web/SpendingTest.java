@@ -13,7 +13,7 @@ public class SpendingTest extends BaseTestWeb {
   @User(
       username = TEST_USER_NAME,
       spends = @Spend(
-          category = "Обучение",
+          category = "Обучение8",
           description = "Обучение Niffler 2.0",
           amount = 89000.00,
           currency = CurrencyValues.RUB

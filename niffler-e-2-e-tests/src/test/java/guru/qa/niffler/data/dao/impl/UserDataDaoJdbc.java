@@ -1,19 +1,17 @@
 package guru.qa.niffler.data.dao.impl;
 
 import guru.qa.niffler.common.values.CurrencyValues;
-import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.user.UserDataDao;
 import guru.qa.niffler.data.entity.user.UserDataEntity;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public class UserDataDaoJdbc implements UserDataDao {
-  private static final Config CFG = Config.getInstance();
-
   private final Connection connection;
 
   public UserDataDaoJdbc(Connection connection) {
@@ -113,5 +111,10 @@ public class UserDataDaoJdbc implements UserDataDao {
     } catch (SQLException e) {
       throw new RuntimeException("Failed to delete user", e);
     }
+  }
+
+  @Override
+  public List<UserDataEntity> findAll() {
+    return List.of();
   }
 }

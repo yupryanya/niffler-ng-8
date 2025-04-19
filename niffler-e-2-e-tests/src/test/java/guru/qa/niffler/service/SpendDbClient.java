@@ -18,16 +18,18 @@ public class SpendDbClient {
   public SpendJson createSpend(SpendJson spend) {
     return transaction(connection -> {
           SpendEntity spendEntity = SpendEntity.fromJson(spend);
-          if (spendEntity.getCategory() != null) {
-            CategoryDaoJdbc categoryDao = new CategoryDaoJdbc(connection);
-            spendEntity.setCategory(
-                categoryDao.findCategoryByUserNameAndCategoryName(
-                    spendEntity.getUsername(),
-                    spendEntity.getCategory().getName()
-                ).orElseGet(() -> categoryDao.createCategory(spendEntity.getCategory()))
-            );
+          CategoryEntity categoryEntity = new CategoryEntity();;
+
+          if (spend.category().name() != null) {
+            categoryEntity = new CategoryDaoJdbc(connection).findCategoryByUserNameAndCategoryName(spend.category().username(), spend.category().name())
+                .orElseGet(() -> new CategoryDaoJdbc(connection).createCategory(CategoryEntity.fromJson(spend.category())));
           }
-          return SpendJson.fromEntity(new SpendDaoJdbc(connection).createSpend(spendEntity));
+          spendEntity.setCategoryId(categoryEntity.getId());
+
+          return SpendJson.fromEntity(
+              new SpendDaoJdbc(connection).createSpend(spendEntity),
+              categoryEntity
+          );
         },
         CFG.spendJdbcUrl(),
         Connection.TRANSACTION_READ_COMMITTED

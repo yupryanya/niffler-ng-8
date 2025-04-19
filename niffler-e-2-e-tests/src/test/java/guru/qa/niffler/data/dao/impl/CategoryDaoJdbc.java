@@ -1,6 +1,5 @@
 package guru.qa.niffler.data.dao.impl;
 
-import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.spend.CategoryDao;
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
 
@@ -11,8 +10,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class CategoryDaoJdbc implements CategoryDao {
-  private static final Config CFG = Config.getInstance();
-
   private final Connection connection;
 
   public CategoryDaoJdbc(Connection connection) {
@@ -48,7 +45,7 @@ public class CategoryDaoJdbc implements CategoryDao {
   @Override
   public Optional<CategoryEntity> findCategoryById(UUID id) {
     try (PreparedStatement ps = connection.prepareStatement(
-        "SELECT id, name, username, archived FROM category WHERE id = ?")) {
+        "SELECT * FROM category WHERE id = ?")) {
       ps.setObject(1, id);
       ps.execute();
 
@@ -71,7 +68,7 @@ public class CategoryDaoJdbc implements CategoryDao {
   @Override
   public Optional<CategoryEntity> findCategoryByUserNameAndCategoryName(String userName, String categoryName) {
     try (PreparedStatement ps = connection.prepareStatement(
-        "SELECT id, name, username, archived FROM category WHERE username = ? AND name = ?")) {
+        "SELECT * FROM category WHERE username = ? AND name = ?")) {
       ps.setString(1, userName);
       ps.setString(2, categoryName);
       ps.execute();
@@ -95,7 +92,7 @@ public class CategoryDaoJdbc implements CategoryDao {
   @Override
   public List<CategoryEntity> findAllCategoriesByUserName(String userName) {
     try (PreparedStatement ps = connection.prepareStatement(
-        "SELECT id, name, username, archived FROM category WHERE username = ?")) {
+        "SELECT id, * FROM category WHERE username = ?")) {
       ps.setString(1, userName);
       ps.execute();
 
@@ -140,6 +137,29 @@ public class CategoryDaoJdbc implements CategoryDao {
       return category;
     } catch (SQLException e) {
       throw new RuntimeException("Failed to update category", e);
+    }
+  }
+
+  @Override
+  public List<CategoryEntity> findAll() {
+    try (PreparedStatement ps = connection.prepareStatement(
+        "SELECT * FROM category")) {
+      ps.execute();
+
+      try (ResultSet rs = ps.executeQuery()) {
+        List<CategoryEntity> categories = new ArrayList<>();
+        while (rs.next()) {
+          CategoryEntity ce = new CategoryEntity();
+          ce.setId(rs.getObject("id", UUID.class));
+          ce.setName(rs.getString("name"));
+          ce.setUsername(rs.getString("username"));
+          ce.setArchived(rs.getBoolean("archived"));
+          categories.add(ce);
+        }
+        return categories;
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException("Failed to find all categories", e);
     }
   }
 }

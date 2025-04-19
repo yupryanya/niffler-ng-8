@@ -1,12 +1,15 @@
 package guru.qa.niffler.data.dao.impl;
 
 import guru.qa.niffler.data.dao.auth.AuthUserDao;
-import guru.qa.niffler.data.entity.auth.UserAuthEntity;
+import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class UserAuthDaoJdbc implements AuthUserDao {
@@ -17,7 +20,7 @@ public class UserAuthDaoJdbc implements AuthUserDao {
   }
 
   @Override
-  public UserAuthEntity createUserAuth(UserAuthEntity authUser) {
+  public AuthUserEntity createUserAuth(AuthUserEntity authUser) {
     try (PreparedStatement ps = connection.prepareStatement(
         "INSERT INTO public.user (username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired)" +
             "VALUES (?, ?, ?, ?, ?, ?)",
@@ -48,13 +51,65 @@ public class UserAuthDaoJdbc implements AuthUserDao {
   }
 
   @Override
-  public void deleteAuthUser(UserAuthEntity authUser) {
+  public void deleteAuthUser(AuthUserEntity authUser) {
     try (PreparedStatement ps = connection.prepareStatement(
         "DELETE FROM user WHERE id = ?")) {
       ps.setObject(1, authUser.getId());
       ps.executeUpdate();
     } catch (SQLException e) {
       throw new RuntimeException("Failed to delete authUser", e);
+    }
+  }
+
+  @Override
+  public Optional<AuthUserEntity> findUserById(String id) {
+    try (PreparedStatement ps = connection.prepareStatement(
+        "SELECT * FROM public.user WHERE id = ?")) {
+      ps.setObject(1, id);
+      ps.execute();
+
+      try (ResultSet rs = ps.executeQuery()) {
+        if (rs.next()) {
+          AuthUserEntity ae = new AuthUserEntity();
+          ae.setId(rs.getObject("id", UUID.class));
+          ae.setUsername(rs.getString("username"));
+          ae.setPassword(rs.getString("password"));
+          ae.setEnabled(rs.getBoolean("enabled"));
+          ae.setAccountNonExpired(rs.getBoolean("account_non_expired"));
+          ae.setAccountNonLocked(rs.getBoolean("account_non_locked"));
+          ae.setCredentialsNonExpired(rs.getBoolean("credentials_non_expired"));
+          return Optional.of(ae);
+        }
+      }
+      return Optional.empty();
+    } catch (SQLException e) {
+      throw new RuntimeException("Failed to find spend by id", e);
+    }
+  }
+
+  @Override
+  public List<AuthUserEntity> findAll() {
+    try (PreparedStatement ps = connection.prepareStatement(
+        "SELECT * FROM public.user")) {
+      ps.execute();
+
+      try (ResultSet rs = ps.executeQuery()) {
+        List<AuthUserEntity> authUsers = new ArrayList<>();
+        while (rs.next()) {
+          AuthUserEntity ae = new AuthUserEntity();
+          ae.setId(rs.getObject("id", UUID.class));
+          ae.setUsername(rs.getString("username"));
+          ae.setPassword(rs.getString("password"));
+          ae.setEnabled(rs.getBoolean("enabled"));
+          ae.setAccountNonExpired(rs.getBoolean("account_non_expired"));
+          ae.setAccountNonLocked(rs.getBoolean("account_non_locked"));
+          ae.setCredentialsNonExpired(rs.getBoolean("credentials_non_expired"));
+          authUsers.add(ae);
+        }
+        return authUsers;
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException("Failed to find all auth users", e);
     }
   }
 }
