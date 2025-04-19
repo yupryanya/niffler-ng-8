@@ -1,35 +1,24 @@
 package guru.qa.niffler.data.dao.impl;
 
+import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.auth.AuthAuthorityDao;
 import guru.qa.niffler.data.entity.auth.AuthAuthorityEntity;
 import guru.qa.niffler.data.mapper.AuthAuthorityEntityRowMapper;
+import guru.qa.niffler.data.tpl.DataSources;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
 public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
+  private static final Config CFG = Config.getInstance();
+
   private final JdbcTemplate jdbcTemplate;
 
-  public AuthAuthorityDaoSpringJdbc(DataSource dataSource) {
-    this.jdbcTemplate = new JdbcTemplate(dataSource);
-  }
-
-  @Override
-  public void createAuthAuthority(AuthAuthorityEntity authAuthority) {
-    jdbcTemplate.update(
-        connection -> {
-          PreparedStatement ps = connection.prepareStatement(
-              "INSERT INTO authority (user_id, authority) VALUES (?, ?)"
-          );
-          ps.setObject(1, authAuthority.getUserId());
-          ps.setString(2, authAuthority.getAuthority().name());
-          return ps;
-        }
-    );
+  public AuthAuthorityDaoSpringJdbc() {
+    this.jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
   }
 
   @Override
