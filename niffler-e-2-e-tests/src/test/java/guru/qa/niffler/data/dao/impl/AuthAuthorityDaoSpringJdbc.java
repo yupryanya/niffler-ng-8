@@ -8,7 +8,6 @@ import guru.qa.niffler.data.tpl.DataSources;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
@@ -20,20 +19,6 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
 
   public AuthAuthorityDaoSpringJdbc() {
     this.jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
-  }
-
-  @Override
-  public void createAuthAuthority(AuthAuthorityEntity authAuthority) {
-    jdbcTemplate.update(
-        connection -> {
-          PreparedStatement ps = connection.prepareStatement(
-              "INSERT INTO authority (user_id, authority) VALUES (?, ?)"
-          );
-          ps.setObject(1, authAuthority.getUserId());
-          ps.setString(2, authAuthority.getAuthority().name());
-          return ps;
-        }
-    );
   }
 
   @Override

@@ -60,14 +60,15 @@ public class UserDbClient {
 
       UUID userId = userAuth.createUserAuth(AuthUserEntity.fromJson(user)).getId();
 
-      Arrays.stream(AuthorityType.values())
+      var authorities = Arrays.stream(AuthorityType.values())
           .map(authority -> {
             AuthAuthorityEntity authAuthority = new AuthAuthorityEntity();
             authAuthority.setUserId(userId);
             authAuthority.setAuthority(authority);
             return authAuthority;
           })
-          .forEach(authAuthority::createAuthAuthority);
+          .toArray(AuthAuthorityEntity[]::new);
+      authAuthority.createAuthAuthorities(authorities);
       return null;
     });
   }
@@ -82,14 +83,15 @@ public class UserDbClient {
         throw new RuntimeException("Simulated error");
       }
 
-      Arrays.stream(AuthorityType.values())
+      var authorities = Arrays.stream(AuthorityType.values())
           .map(authority -> {
             AuthAuthorityEntity authAuthority = new AuthAuthorityEntity();
             authAuthority.setUserId(userId);
             authAuthority.setAuthority(authority);
             return authAuthority;
           })
-          .forEach(authAuthority::createAuthAuthority);
+          .toArray(AuthAuthorityEntity[]::new);
+      authAuthority.createAuthAuthorities(authorities);
       return null;
     });
   }

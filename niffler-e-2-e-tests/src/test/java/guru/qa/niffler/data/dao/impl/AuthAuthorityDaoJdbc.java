@@ -17,19 +17,6 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
   private static final Config CFG = Config.getInstance();
 
   @Override
-  public void createAuthAuthority(AuthAuthorityEntity authAuthority) {
-    try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
-        "INSERT INTO authority (user_id, authority) VALUES (?, ?)")) {
-      ps.setObject(1, authAuthority.getUserId());
-      ps.setString(2, authAuthority.getAuthority().name());
-
-      ps.executeUpdate();
-    } catch (SQLException e) {
-      throw new RuntimeException("Failed to create AuthAuthority", e);
-    }
-  }
-
-  @Override
   public void createAuthAuthorities(AuthAuthorityEntity... authAuthority) {
     try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
         "INSERT INTO authority (user_id, authority) VALUES (?, ?)")) {
