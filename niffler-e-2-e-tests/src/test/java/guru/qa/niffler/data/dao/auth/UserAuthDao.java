@@ -5,7 +5,7 @@ import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import java.util.List;
 import java.util.Optional;
 
-public interface AuthUserDao {
+public interface UserAuthDao {
   AuthUserEntity createUserAuth(AuthUserEntity authUser);
 
   void deleteAuthUser(AuthUserEntity authUser);

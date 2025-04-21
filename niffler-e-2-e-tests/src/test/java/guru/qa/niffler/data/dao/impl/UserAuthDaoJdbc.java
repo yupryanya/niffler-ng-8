@@ -1,9 +1,9 @@
 package guru.qa.niffler.data.dao.impl;
 
-import guru.qa.niffler.data.dao.auth.AuthUserDao;
+import guru.qa.niffler.config.Config;
+import guru.qa.niffler.data.dao.auth.UserAuthDao;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,16 +12,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class UserAuthDaoJdbc implements AuthUserDao {
-  private final Connection connection;
+import static guru.qa.niffler.data.tpl.Connections.holder;
 
-  public UserAuthDaoJdbc(Connection connection) {
-    this.connection = connection;
-  }
+public class UserAuthDaoJdbc implements UserAuthDao {
+  private static final Config CFG = Config.getInstance();
 
   @Override
   public AuthUserEntity createUserAuth(AuthUserEntity authUser) {
-    try (PreparedStatement ps = connection.prepareStatement(
+    try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
         "INSERT INTO public.user (username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired)" +
             "VALUES (?, ?, ?, ?, ?, ?)",
         PreparedStatement.RETURN_GENERATED_KEYS
@@ -52,7 +50,7 @@ public class UserAuthDaoJdbc implements AuthUserDao {
 
   @Override
   public void deleteAuthUser(AuthUserEntity authUser) {
-    try (PreparedStatement ps = connection.prepareStatement(
+    try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
         "DELETE FROM user WHERE id = ?")) {
       ps.setObject(1, authUser.getId());
       ps.executeUpdate();
@@ -63,7 +61,7 @@ public class UserAuthDaoJdbc implements AuthUserDao {
 
   @Override
   public Optional<AuthUserEntity> findUserById(String id) {
-    try (PreparedStatement ps = connection.prepareStatement(
+    try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
         "SELECT * FROM public.user WHERE id = ?")) {
       ps.setObject(1, id);
       ps.execute();
@@ -89,7 +87,7 @@ public class UserAuthDaoJdbc implements AuthUserDao {
 
   @Override
   public List<AuthUserEntity> findAll() {
-    try (PreparedStatement ps = connection.prepareStatement(
+    try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
         "SELECT * FROM public.user")) {
       ps.execute();
 
