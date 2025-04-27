@@ -24,7 +24,7 @@ public class SpendEntityRowMapper implements RowMapper<SpendEntity> {
     result.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
     result.setAmount(rs.getDouble("amount"));
     result.setDescription(rs.getString("description"));
-    result.setCategoryId(rs.getObject("category_id", UUID.class));
+    result.setCategory(null);
     return result;
   }
 }

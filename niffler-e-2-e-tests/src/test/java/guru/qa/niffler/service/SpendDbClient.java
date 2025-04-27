@@ -37,7 +37,7 @@ public class SpendDbClient {
           } else {
             throw new IllegalArgumentException("Category cannot be null");
           }
-          spendEntity.setCategoryId(categoryEntity.getId());
+          spendEntity.setCategory(categoryEntity);
 
           return SpendJson.fromEntity(
               spendDao.createSpend(spendEntity),
