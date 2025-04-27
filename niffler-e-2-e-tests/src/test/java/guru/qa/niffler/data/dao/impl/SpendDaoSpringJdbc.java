@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
-import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
@@ -32,7 +31,7 @@ public class SpendDaoSpringJdbc implements SpendDao {
           ps.setString(3, spend.getCurrency().name());
           ps.setDouble(4, spend.getAmount());
           ps.setString(5, spend.getDescription());
-          ps.setObject(6, spend.getCategoryId());
+          ps.setObject(6, spend.getCategory());
           return ps;
         },
         kh

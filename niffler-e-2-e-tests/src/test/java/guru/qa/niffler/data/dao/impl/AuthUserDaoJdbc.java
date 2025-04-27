@@ -1,7 +1,7 @@
 package guru.qa.niffler.data.dao.impl;
 
 import guru.qa.niffler.config.Config;
-import guru.qa.niffler.data.dao.auth.UserAuthDao;
+import guru.qa.niffler.data.dao.auth.AuthUserDao;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 
 import java.sql.PreparedStatement;
@@ -14,7 +14,7 @@ import java.util.UUID;
 
 import static guru.qa.niffler.data.tpl.Connections.holder;
 
-public class UserAuthDaoJdbc implements UserAuthDao {
+public class AuthUserDaoJdbc implements AuthUserDao {
   private static final Config CFG = Config.getInstance();
 
   @Override

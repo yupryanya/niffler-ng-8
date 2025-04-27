@@ -25,11 +25,11 @@ public class SpendDaoJdbc implements SpendDao {
         "INSERT INTO spend (username, spend_date, currency, amount, description, category_id) VALUES (?, ?, ?, ?, ?, ?)",
         Statement.RETURN_GENERATED_KEYS)) {
       ps.setString(1, spend.getUsername());
-      ps.setObject(2, spend.getSpendDate());
+      ps.setDate(2, new java.sql.Date(spend.getSpendDate().getTime()));
       ps.setString(3, spend.getCurrency().name());
       ps.setDouble(4, spend.getAmount());
       ps.setString(5, spend.getDescription());
-      ps.setObject(6, spend.getCategoryId());
+      ps.setObject(6, spend.getCategory().getId());
 
       ps.executeUpdate();
 
@@ -63,7 +63,7 @@ public class SpendDaoJdbc implements SpendDao {
           se.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
           se.setAmount(rs.getDouble("amount"));
           se.setDescription(rs.getString("description"));
-          se.setCategoryId(null);
+          se.setCategory(null);
           return Optional.of(se);
         }
       }
@@ -89,7 +89,7 @@ public class SpendDaoJdbc implements SpendDao {
           se.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
           se.setAmount(rs.getDouble("amount"));
           se.setDescription(rs.getString("description"));
-          se.setCategoryId(null);
+          se.setCategory(null);
           spends.add(se);
         }
         return spends;
@@ -125,7 +125,7 @@ public class SpendDaoJdbc implements SpendDao {
           se.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
           se.setAmount(rs.getDouble("amount"));
           se.setDescription(rs.getString("description"));
-          se.setCategoryId(null);
+          se.setCategory(null);
           spends.add(se);
         }
         return spends;
