@@ -21,7 +21,7 @@ public class SpendingTest extends BaseTestWeb {
   )
   @Test
   void spendingDescriptionShouldBeUpdatedByTableAction(SpendJson spend) {
-    final String newDescription = "Обучение Niffler NG";
+    final String newDescription = "Обучение Niffler NG2";
 
     Selenide.open(CFG.frontUrl(), LoginPage.class)
         .doSuccessLogin(TEST_USER_NAME, TEST_USER_PASSWORD)

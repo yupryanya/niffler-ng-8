@@ -71,6 +71,11 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
   }
 
   @Override
+  public AuthUserEntity update(AuthUserEntity authUser) {
+    return null;
+  }
+
+  @Override
   public Optional<AuthUserEntity> findById(String id) {
     return Optional.ofNullable(
         jdbcTemplate.query(
@@ -83,6 +88,34 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
             AuthUserEntityExtractor.instance,
             id
         )
+    );
+  }
+
+  @Override
+  public Optional<AuthUserEntity> findByUsername(String username) {
+    return Optional.ofNullable(
+        jdbcTemplate.query(
+            """
+                   SELECT a.id AS authority_id, a.authority, a.user_id,
+                   u.username, u.password, u.enabled, u.account_non_expired, u.account_non_locked, u.credentials_non_expired
+                   FROM public.user u JOIN authority a ON u.id = a.user_id
+                   WHERE u.username = ?
+                """,
+            AuthUserEntityExtractor.instance,
+            username
+        )
+    );
+  }
+
+  @Override
+  public void remove(AuthUserEntity authUser) {
+    jdbcTemplate.update(
+        "DELETE FROM authority WHERE user_id = ?",
+        authUser.getId()
+    );
+    jdbcTemplate.update(
+        "DELETE FROM public.user WHERE id = ?",
+        authUser.getId()
     );
   }
 }

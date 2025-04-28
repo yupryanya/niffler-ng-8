@@ -62,6 +62,11 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
   }
 
   @Override
+  public AuthUserEntity update(AuthUserEntity authUser) {
+    return null;
+  }
+
+  @Override
   public Optional<AuthUserEntity> findById(String id) {
     try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
         "SELECT * FROM public.user u JOIN authority a ON u.id = a.user_id WHERE id = ?")) {
@@ -88,7 +93,54 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
         return Optional.of(user);
       }
     } catch (SQLException e) {
-      throw new RuntimeException("Failed to find spend by id", e);
+      throw new RuntimeException("Failed to find user by id", e);
+    }
+  }
+
+  @Override
+  public Optional<AuthUserEntity> findByUsername(String username) {
+    try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
+        "SELECT * FROM public.user u JOIN authority a ON u.id = a.user_id WHERE username = ?")) {
+      ps.setString(1, username);
+      ps.execute();
+      List<AuthAuthorityEntity> authAuthorities = new ArrayList<>();
+      AuthUserEntity user = null;
+      try (ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+          if (user == null) {
+            user = AuthUserEntityRowMapper.instance.mapRow(rs, 1);
+          }
+          AuthAuthorityEntity ae = new AuthAuthorityEntity();
+          ae.setUser(user);
+          ae.setId(rs.getObject("a.id", UUID.class));
+          ae.setAuthority(AuthorityType.valueOf(rs.getString("authority")));
+          authAuthorities.add(ae);
+        }
+      }
+      if (user == null) {
+        return Optional.empty();
+      } else {
+        user.setAuthorities(authAuthorities);
+        return Optional.of(user);
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException("Failed to find user by username " + username, e);
+    }
+  }
+
+  @Override
+  public void remove(AuthUserEntity authUser) {
+    try (PreparedStatement deleteAuthoritiesPs = holder(CFG.authJdbcUrl()).connection().prepareStatement(
+        "DELETE FROM authority WHERE user_id = ?");
+         PreparedStatement deleteUserPs = holder(CFG.authJdbcUrl()).connection().prepareStatement(
+             "DELETE FROM public.user WHERE id = ?")) {
+      deleteAuthoritiesPs.setObject(1, authUser.getId());
+      deleteAuthoritiesPs.execute();
+
+      deleteUserPs.setObject(1, authUser.getId());
+      deleteUserPs.execute();
+    } catch (SQLException e) {
+      throw new RuntimeException("Failed to remove user", e);
     }
   }
 }
