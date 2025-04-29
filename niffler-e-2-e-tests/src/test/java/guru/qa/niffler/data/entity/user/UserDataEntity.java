@@ -116,6 +116,7 @@ public class UserDataEntity implements Serializable {
 
   public static UserDataEntity fromJson(UserJson user) {
     UserDataEntity entity = new UserDataEntity();
+    entity.setId(user.id());
     entity.setUsername(user.username());
     entity.setCurrency(CurrencyValues.RUB);
     entity.setFirstname(null);

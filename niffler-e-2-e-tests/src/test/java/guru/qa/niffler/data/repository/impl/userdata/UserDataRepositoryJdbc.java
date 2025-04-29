@@ -102,7 +102,92 @@ public class UserDataRepositoryJdbc implements UserDataRepository {
           }
         }
       }
+      if (ue != null) {
+        ue.setFriendshipRequests(friendshipRequests);
+        ue.setFriendshipAddressees(friendshipAddressees);
+        return Optional.of(ue);
+      } else {
+        return Optional.empty();
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException("Failed to find user by id", e);
+    }
+  }
 
+  @Override
+  public UserDataEntity update(UserDataEntity user) {
+    if (user.getId() == null) {
+      throw new IllegalArgumentException("User ID must not be null for update operation");
+    }
+
+    try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
+        "UPDATE public.user SET username = ?, currency = ?, firstname = ?, surname = ?, full_name = ?, photo = ?, photo_small = ? " +
+            "WHERE id = ?")) {
+
+      ps.setString(1, user.getUsername());
+      ps.setString(2, user.getCurrency().name());
+      ps.setString(3, user.getFirstname());
+      ps.setString(4, user.getSurname());
+      ps.setString(5, user.getFullname());
+      ps.setBytes(6, user.getPhoto());
+      ps.setBytes(7, user.getPhotoSmall());
+      ps.setObject(8, user.getId());
+      ps.executeUpdate();
+
+      removeFriendshipEntities(user.getId());
+      if (user.getFriendshipRequests() != null) {
+        createFriendshipEntities(user.getFriendshipRequests());
+      }
+
+      if (user.getFriendshipAddressees() != null && !user.getFriendshipAddressees().isEmpty()) {
+        createFriendshipEntities(user.getFriendshipAddressees());
+      }
+
+      return user;
+    } catch (SQLException e) {
+      throw new RuntimeException("Failed to update user", e);
+    }
+  }
+
+  @Override
+  public Optional<UserDataEntity> findByUsername(String username) {
+    try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
+        """
+            SELECT u.*, f.requester_id, f.addressee_id, f.created_date, f.status
+            FROM public.user u
+            LEFT JOIN public.friendship f ON u.id = f.requester_id OR u.id = f.addressee_id
+            WHERE u.username = ?
+            """
+    )) {
+      ps.setString(1, username);
+
+      UserDataEntity ue = null;
+      List<FriendshipEntity> friendshipRequests = new ArrayList<>();
+      List<FriendshipEntity> friendshipAddressees = new ArrayList<>();
+
+      try (ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+          if (ue == null) {
+            ue = UserDataEntityRowMapper.instance.mapRow(rs, 1);
+          }
+
+          UUID requesterId = rs.getObject("requester_id", UUID.class);
+          UUID addresseeId = rs.getObject("addressee_id", UUID.class);
+          if (requesterId != null && addresseeId != null) {
+            FriendshipEntity fe = new FriendshipEntity();
+            fe.setRequester(createUserReference(requesterId));
+            fe.setAddressee(createUserReference(addresseeId));
+            fe.setCreatedDate(rs.getDate("created_date"));
+            fe.setStatus(FriendshipStatus.valueOf(rs.getString("status")));
+
+            if (requesterId.equals(ue.getId())) {
+              friendshipRequests.add(fe);
+            } else if (addresseeId.equals(ue.getId())) {
+              friendshipAddressees.add(fe);
+            }
+          }
+        }
+      }
       if (ue != null) {
         ue.setFriendshipRequests(friendshipRequests);
         ue.setFriendshipAddressees(friendshipAddressees);
@@ -141,7 +226,22 @@ public class UserDataRepositoryJdbc implements UserDataRepository {
     createFriendshipEntity(friendship2);
   }
 
-  private FriendshipEntity createFriendshipEntity(FriendshipEntity friendship) {
+  @Override
+  public void remove(UserDataEntity user) {
+    try (var connection = holder(CFG.userdataJdbcUrl()).connection()) {
+      removeFriendshipEntities(user.getId());
+
+      try (var deleteUser = connection.prepareStatement(
+          "DELETE FROM public.user WHERE id = ?")) {
+        deleteUser.setObject(1, user.getId());
+        deleteUser.executeUpdate();
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException("Failed to remove user", e);
+    }
+  }
+
+  private void createFriendshipEntity(FriendshipEntity friendship) {
     try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
         "INSERT INTO friendship (requester_id, addressee_id, status, created_date) " +
             "VALUES (?, ?, ?, ?)"
@@ -154,7 +254,25 @@ public class UserDataRepositoryJdbc implements UserDataRepository {
     } catch (SQLException e) {
       throw new RuntimeException("Failed to create friendship entity", e);
     }
-    return friendship;
+  }
+
+  private void removeFriendshipEntities(UUID userId) {
+    try (var connection = holder(CFG.userdataJdbcUrl()).connection();
+         var ps = connection.prepareStatement(
+             "DELETE FROM public.friendship WHERE requester_id = ? OR addressee_id = ?")) {
+
+      ps.setObject(1, userId);
+      ps.setObject(2, userId);
+      ps.executeUpdate();
+    } catch (SQLException e) {
+      throw new RuntimeException("Failed to remove friendship entities", e);
+    }
+  }
+
+  private void createFriendshipEntities(List<FriendshipEntity> friendships) {
+    if (friendships != null) {
+      friendships.forEach(this::createFriendshipEntity);
+    }
   }
 
   private UserDataEntity createUserReference(UUID id) {

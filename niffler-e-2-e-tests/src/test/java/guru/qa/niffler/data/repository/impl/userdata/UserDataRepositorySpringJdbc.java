@@ -81,6 +81,16 @@ public class UserDataRepositorySpringJdbc implements UserDataRepository {
   }
 
   @Override
+  public UserDataEntity update(UserDataEntity user) {
+    return null;
+  }
+
+  @Override
+  public Optional<UserDataEntity> findByUsername(String username) {
+    return null;
+  }
+
+  @Override
   public void addInvitation(UserDataEntity requester, UserDataEntity addressee) {
     FriendshipEntity request = new FriendshipEntity();
     request.setRequester(requester);
@@ -104,6 +114,11 @@ public class UserDataRepositorySpringJdbc implements UserDataRepository {
 
     createFriendshipEntity(friendship1);
     createFriendshipEntity(friendship2);
+  }
+
+  @Override
+  public void remove(UserDataEntity user) {
+
   }
 
   private FriendshipEntity createFriendshipEntity(FriendshipEntity friendship) {
