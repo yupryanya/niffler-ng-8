@@ -1,6 +1,5 @@
 package guru.qa.niffler.service.api;
 
-import guru.qa.niffler.api.AuthApi;
 import guru.qa.niffler.api.UserApi;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.UserJson;
@@ -40,7 +39,6 @@ public class UserApiClient implements UserClient {
       .build();
 
   private final UserApi userDataApi = retrofit.create(UserApi.class);
-  private final AuthApi authApi = retrofitAuth.create(AuthApi.class);
 
   private <T> T execute(Call<T> call, int expectedStatusCode) {
     try {
