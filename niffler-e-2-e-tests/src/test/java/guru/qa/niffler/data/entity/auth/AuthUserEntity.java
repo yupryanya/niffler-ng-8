@@ -80,7 +80,7 @@ public class AuthUserEntity implements Serializable {
   public static AuthUserEntity fromJson(UserJson user) {
     AuthUserEntity entity = new AuthUserEntity();
     entity.setUsername(user.username());
-    entity.setPassword(pe.encode(user.password()));
+    entity.setPassword(pe.encode(user.testData().password()));
     entity.setEnabled(true);
     entity.setAccountNonExpired(true);
     entity.setAccountNonLocked(true);

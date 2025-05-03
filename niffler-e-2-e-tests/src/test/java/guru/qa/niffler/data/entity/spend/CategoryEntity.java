@@ -29,6 +29,15 @@ public class CategoryEntity implements Serializable {
   @Column(nullable = false)
   private boolean archived;
 
+  public static CategoryJson fromEntity(CategoryEntity entity) {
+    return new CategoryJson(
+        entity.getId(),
+        entity.getName(),
+        entity.getUsername(),
+        entity.isArchived()
+    );
+  }
+
   @Override
   public final boolean equals(Object o) {
     if (this == o) return true;

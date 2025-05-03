@@ -3,7 +3,6 @@ package guru.qa.niffler.data.repository.impl.spend;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
-import guru.qa.niffler.data.jpa.EntityManagers;
 import guru.qa.niffler.data.repository.SpendRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
@@ -11,9 +10,13 @@ import jakarta.persistence.NoResultException;
 import java.util.Optional;
 import java.util.UUID;
 
+import static guru.qa.niffler.data.jpa.EntityManagers.em;
+
 public class SpendRepositoryHibernate implements SpendRepository {
   private static final Config CFG = Config.getInstance();
-  private final EntityManager entityManager = EntityManagers.em(CFG.spendJdbcUrl());
+
+  private final EntityManager entityManager = em(CFG.spendJdbcUrl());
+
 
   @Override
   public SpendEntity createSpend(SpendEntity spend) {

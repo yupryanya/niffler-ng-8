@@ -22,4 +22,8 @@ public class EntityManagers {
         ).createEntityManager()
     );
   }
+
+  public static void closeAllConnections() {
+    emfs.values().forEach(EntityManagerFactory::close);
+  }
 }

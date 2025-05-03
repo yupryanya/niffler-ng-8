@@ -14,4 +14,6 @@ public interface UserClient {
   void createOutcomeInvitations(UserJson addressee, int count);
 
   Optional<UserJson> findUserByUsername(String username);
+
+  UserJson createUser(String username, String password);
 }

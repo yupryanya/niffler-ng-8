@@ -1,6 +1,7 @@
 package guru.qa.niffler.data.entity.spend;
 
 import guru.qa.niffler.common.values.CurrencyValues;
+import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -43,6 +44,25 @@ public class SpendEntity implements Serializable {
   @OneToOne(fetch = FetchType.EAGER, cascade = PERSIST)
   @JoinColumn(name = "category_id", referencedColumnName = "id")
   private CategoryEntity category;
+
+  public static SpendJson fromEntity(SpendEntity spendEntity, CategoryEntity categoryEntity) {
+    final String username = spendEntity.getUsername();
+
+    return new SpendJson(
+        spendEntity.getId(),
+        spendEntity.getSpendDate(),
+        new CategoryJson(
+            categoryEntity.getId(),
+            categoryEntity.getName(),
+            username,
+            categoryEntity.isArchived()
+        ),
+        spendEntity.getCurrency(),
+        spendEntity.getAmount(),
+        spendEntity.getDescription(),
+        username
+    );
+  }
 
   @Override
   public final boolean equals(Object o) {
