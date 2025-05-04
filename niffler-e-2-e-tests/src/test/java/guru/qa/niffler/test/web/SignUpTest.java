@@ -1,6 +1,8 @@
 package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
+import guru.qa.niffler.jupiter.annotation.User;
+import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.page.SignUpPage;
 import org.junit.jupiter.api.Test;
@@ -23,12 +25,13 @@ public class SignUpTest extends BaseTestWeb {
                 .verifySuccessSignUpMessage();
     }
 
+    @User(username = TEST_USER_NAME)
     @Test
-    void shouldNotRegisterUserWithExistingUsername() {
+    void shouldNotRegisterUserWithExistingUsername(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .navigateToSignUpPage()
-                .doSignUp(TEST_USER_NAME, newValidPassword())
-                .verifyUsernameWarning(String.format(USER_EXISTS, TEST_USER_NAME))
+                .doSignUp(user.username(), newValidPassword())
+                .verifyUsernameWarning(String.format(USER_EXISTS, user.username()))
                 .verifySignupPageIsOpened();
     }
 

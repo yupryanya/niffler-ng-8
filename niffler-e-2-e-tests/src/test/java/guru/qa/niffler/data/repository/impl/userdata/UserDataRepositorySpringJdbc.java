@@ -80,14 +80,37 @@ public class UserDataRepositorySpringJdbc implements UserDataRepository {
     );
   }
 
+  //TODO: update friendship requests and addressees
   @Override
   public UserDataEntity update(UserDataEntity user) {
-    return null;
+    jdbcTemplate.update(
+        "UPDATE public.user SET currency = ?, firstname = ?, surname = ?, full_name = ?, photo = ?, photo_small = ? WHERE username = ?",
+        user.getCurrency().name(),
+        user.getFirstname(),
+        user.getSurname(),
+        user.getFullname(),
+        user.getPhoto(),
+        user.getPhotoSmall(),
+        user.getUsername()
+    );
+    return user;
   }
 
   @Override
   public Optional<UserDataEntity> findByUsername(String username) {
-    return null;
+    return Optional.ofNullable(
+        jdbcTemplate.query(
+            """
+                SELECT u.*,
+                f.requester_id, f.addressee_id, f.created_date, f.status
+                FROM public.user u LEFT JOIN public.friendship f
+                ON u.id = f.requester_id OR u.id = f.addressee_id
+                WHERE u.username = ?
+                """,
+            UserDataEntityExtractor.instance,
+            username
+        )
+    );
   }
 
   @Override
@@ -118,7 +141,8 @@ public class UserDataRepositorySpringJdbc implements UserDataRepository {
 
   @Override
   public void remove(UserDataEntity user) {
-
+    jdbcTemplate.update("DELETE FROM friendship WHERE requester_id = ? OR addressee_id = ?", user.getId(), user.getId());
+    jdbcTemplate.update("DELETE FROM public.user WHERE id = ?", user.getId());
   }
 
   private FriendshipEntity createFriendshipEntity(FriendshipEntity friendship) {

@@ -1,6 +1,8 @@
 package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
+import guru.qa.niffler.jupiter.annotation.User;
+import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -10,25 +12,28 @@ import static guru.qa.niffler.utils.RandomDataUtils.newValidPassword;
 import static guru.qa.niffler.utils.RandomDataUtils.nonExistentUserName;
 
 public class LoginTest extends BaseTestWeb{
+    @User(username = TEST_USER_NAME)
     @Test
-    void shouldLoginWithValidCredentials() {
+    void shouldLoginWithValidCredentials(UserJson user) {
         Selenide.open(CFG.authUrl(), LoginPage.class)
-                .doSuccessLogin(TEST_USER_NAME, TEST_USER_PASSWORD)
+                .doSuccessLogin(user.username(), user.testData().password())
                 .verifyMainPageIsOpened();
     }
 
+    @User(username = TEST_USER_NAME)
     @Test
-    void shouldNotLoginWithInvalidUsername() {
+    void shouldNotLoginWithInvalidUsername(UserJson user) {
         Selenide.open(CFG.authUrl(), LoginPage.class)
-                .doLogin(nonExistentUserName(), TEST_USER_PASSWORD)
+                .doLogin(nonExistentUserName(), user.testData().password())
                 .verifyBadCredentialsErrorMessage()
                 .verifyLoginPageIsOpened();
     }
 
+    @User(username = TEST_USER_NAME)
     @Test
-    void shouldNotLoginWithInvalidPassword() {
+    void shouldNotLoginWithInvalidPassword(UserJson user) {
         Selenide.open(CFG.authUrl(), LoginPage.class)
-                .doLogin(TEST_USER_NAME, newValidPassword())
+                .doLogin(user.username(), newValidPassword())
                 .verifyBadCredentialsErrorMessage()
                 .verifyLoginPageIsOpened();
     }
@@ -42,11 +47,12 @@ public class LoginTest extends BaseTestWeb{
                 .verifyLoginPageIsOpened();
     }
 
+    @User(username = TEST_USER_NAME)
     @ParameterizedTest
     @EmptySource
-    void shouldNotLoginWithEmptyPassword(String password) {
+    void shouldNotLoginWithEmptyPassword(String password, UserJson user) {
         Selenide.open(CFG.authUrl(), LoginPage.class)
-                .doLogin(TEST_USER_NAME, password)
+                .doLogin(user.username(), password)
                 .verifyFillPasswordMessage()
                 .verifyLoginPageIsOpened();
     }

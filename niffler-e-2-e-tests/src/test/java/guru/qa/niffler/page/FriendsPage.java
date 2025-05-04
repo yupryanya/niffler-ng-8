@@ -4,6 +4,9 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.model.UserJson;
+
+import java.util.List;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byLinkText;
@@ -11,48 +14,74 @@ import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
 public class FriendsPage {
-    protected static final Config CFG = Config.getInstance();
+  protected static final Config CFG = Config.getInstance();
 
-    private static final String FRIENDS_TAB_LABEL = "Friends";
-    private static final String NO_FRIENDS_TEXT = "There are no users yet";
+  private static final String FRIENDS_TAB_LABEL = "Friends";
+  private static final String NO_FRIENDS_TEXT = "There are no users yet";
 
-    private final SelenideElement friendsTab = $("#simple-tabpanel-friends");
-    private final SelenideElement friendsTable = $("#friends");
-    private final ElementsCollection friendsTableItems = $$("#friends tr");
-    private final ElementsCollection incomingRequestsTableItems = $$("#requests");
+  private final SelenideElement friendsTab = $("#simple-tabpanel-friends");
+  private final SelenideElement friendsTable = $("#friends");
+  private final ElementsCollection friendsTableItems = $$("#friends tr");
+  private final ElementsCollection incomingRequestsTableItems = $$("#requests");
+  private final SelenideElement searchField = $("input[aria-label='search']");
+  private final SelenideElement clearSearchButton = $("#input-clear");
 
-    private String getUrl() {
-        return CFG.frontUrl() + "people/friends";
+  private String getUrl() {
+    return CFG.frontUrl() + "people/friends";
+  }
+
+  public FriendsPage open() {
+    return Selenide.open(getUrl(), FriendsPage.class)
+        .verifyPageIsOpened();
+  }
+
+  public FriendsPage searchFriend(String friend) {
+    if (clearSearchButton.isDisplayed()) {
+      clearSearchButton.click();
     }
+    searchField.setValue(friend).pressEnter();
+    return this;
+  }
 
-    public FriendsPage open() {
-        return Selenide.open(getUrl(), FriendsPage.class)
-                .verifyPageIsOpened();
-    }
+  public FriendsPage verifyPageIsOpened() {
+    $(byLinkText(FRIENDS_TAB_LABEL))
+        .shouldHave(attribute("aria-selected", "true"));
+    return this;
+  }
 
-    public FriendsPage verifyPageIsOpened() {
-        $(byLinkText(FRIENDS_TAB_LABEL))
-                .shouldHave(attribute("aria-selected", "true"));
-        return this;
-    }
+  public FriendsPage verifyFriendIsPresent(String friendName) {
+    searchFriend(friendName);
+    friendsTableItems
+        .find(text(friendName))
+        .shouldBe(visible);
+    return this;
+  }
 
-    public FriendsPage verifyFriendIsPresent(String friend) {
-        friendsTableItems
-                .find(text(friend))
-                .shouldBe(visible);
-        return this;
-    }
+  public FriendsPage verifyNoFriendsPresent() {
+    friendsTab.shouldHave(text(NO_FRIENDS_TEXT));
+    friendsTable.shouldNotBe(visible);
+    return this;
+  }
 
-    public FriendsPage verifyNoFriendsPresent() {
-        friendsTab.shouldHave(text(NO_FRIENDS_TEXT));
-        friendsTable.shouldNotBe(visible);
-        return this;
-    }
+  public FriendsPage verifyIncomingRequestFrom(String incomeRequest) {
+    searchFriend(incomeRequest);
+    incomingRequestsTableItems
+        .find(text(incomeRequest))
+        .shouldBe(visible);
+    return this;
+  }
 
-    public FriendsPage verifyIncomingRequestFrom(String incomeFriend) {
-        incomingRequestsTableItems
-                .find(text(incomeFriend))
-                .shouldBe(visible);
-        return this;
+  public FriendsPage verifyFriendsPresent(List<UserJson> friends) {
+    for (UserJson friend : friends) {
+      verifyFriendIsPresent(friend.username());
     }
+    return this;
+  }
+
+  public FriendsPage verifyIncomingRequests(List<UserJson> incomeInvite) {
+    for (UserJson income : incomeInvite) {
+      verifyIncomingRequestFrom(income.username());
+    }
+    return this;
+  }
 }

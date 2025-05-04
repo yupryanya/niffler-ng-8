@@ -2,6 +2,7 @@ package guru.qa.niffler.data.entity.user;
 
 import guru.qa.niffler.common.values.CurrencyValues;
 import guru.qa.niffler.common.values.FriendshipStatus;
+import guru.qa.niffler.model.TestData;
 import guru.qa.niffler.model.UserJson;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -118,12 +119,30 @@ public class UserDataEntity implements Serializable {
     UserDataEntity entity = new UserDataEntity();
     entity.setId(user.id());
     entity.setUsername(user.username());
-    entity.setCurrency(CurrencyValues.RUB);
+    entity.setCurrency(user.currency());
     entity.setFirstname(null);
     entity.setSurname(null);
     entity.setFullname(null);
     entity.setPhoto(null);
     entity.setPhotoSmall(null);
     return entity;
+  }
+
+  public static UserJson fromEntity(UserDataEntity entity) {
+    return new UserJson(
+        entity.getId(),
+        entity.getUsername(),
+        entity.getFullname(),
+        entity.getCurrency(),
+        null,
+        new TestData(
+            null,
+            new ArrayList<>(),
+            new ArrayList<>(),
+            new ArrayList<>(),
+            new ArrayList<>(),
+            new ArrayList<>()
+        )
+    );
   }
 }

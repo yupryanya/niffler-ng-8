@@ -17,8 +17,9 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
-import static guru.qa.niffler.utils.RandomDataUtils.newValidPassword;
-import static guru.qa.niffler.utils.RandomDataUtils.nonExistentUserName;
+import static guru.qa.niffler.data.entity.user.UserDataEntity.fromEntity;
+import static guru.qa.niffler.model.UserJson.generateRandomUserJson;
+import static guru.qa.niffler.model.UserJson.generateUserJson;
 
 public class UserDbClient implements UserClient {
   private static final Config CFG = Config.getInstance();
@@ -49,7 +50,7 @@ public class UserDbClient implements UserClient {
           .toList());
 
       userAuth.create(authUserEntity);
-      UserJson userJson = UserJson.fromEntity(userEntity);
+      UserJson userJson = fromEntity(userEntity);
       return userJson;
     });
   }
@@ -64,21 +65,7 @@ public class UserDbClient implements UserClient {
       for (int i = 0; i < count; i++) {
         UserDataEntity friendEntity = UserDataEntity.fromJson(createUser(generateRandomUserJson()));
         userData.addFriendship(userEntity, friendEntity);
-      }
-      return null;
-    });
-  }
-
-  @Override
-  public void createIncomeInvitations(UserJson user, int count) {
-    if (count < 1) {
-      throw new IllegalArgumentException("Count must be greater than 0");
-    }
-    xaTransactionTemplate.execute(() -> {
-      UserDataEntity userEntity = findUserById(user.id());
-      for (int i = 0; i < count; i++) {
-        UserDataEntity addresseeEntity = UserDataEntity.fromJson(createUser(generateRandomUserJson()));
-        userData.addInvitation(userEntity, addresseeEntity);
+        user.testData().friends().add(fromEntity(friendEntity));
       }
       return null;
     });
@@ -92,24 +79,38 @@ public class UserDbClient implements UserClient {
     xaTransactionTemplate.execute(() -> {
       UserDataEntity userEntity = findUserById(user.id());
       for (int i = 0; i < count; i++) {
+        UserDataEntity addresseeEntity = UserDataEntity.fromJson(createUser(generateRandomUserJson()));
+        userData.addInvitation(userEntity, addresseeEntity);
+        user.testData().outcomeInvitations().add(fromEntity(addresseeEntity));
+      }
+      return user;
+    });
+  }
+
+  @Override
+  public void createIncomeInvitations(UserJson user, int count) {
+    if (count < 1) {
+      throw new IllegalArgumentException("Count must be greater than 0");
+    }
+    xaTransactionTemplate.execute(() -> {
+      UserDataEntity userEntity = findUserById(user.id());
+      for (int i = 0; i < count; i++) {
         UserDataEntity requesterEntity = UserDataEntity.fromJson(createUser(generateRandomUserJson()));
         userData.addInvitation(requesterEntity, userEntity);
+        user.testData().incomeInvitations().add(fromEntity(requesterEntity));
       }
       return null;
     });
   }
 
-  @Override
+@Override
   public Optional<UserJson> findUserByUsername(String username) {
     return userData.findByUsername(username)
-        .map(UserJson::fromEntity);
+        .map(UserDataEntity::fromEntity);
   }
 
   public UserJson createUser(String username, String password) {
-    return createUser(
-        new UserJson(null, username, password
-        )
-    );
+    return createUser(generateUserJson(username, password));
   }
 
   private UserDataEntity findUserById(UUID id) {
@@ -117,7 +118,5 @@ public class UserDbClient implements UserClient {
         .orElseThrow(() -> new IllegalArgumentException("User not found: " + id));
   }
 
-  private UserJson generateRandomUserJson() {
-    return new UserJson(null, nonExistentUserName(), newValidPassword());
-  }
+
 }

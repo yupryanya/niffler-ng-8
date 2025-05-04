@@ -63,7 +63,37 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
 
   @Override
   public AuthUserEntity update(AuthUserEntity authUser) {
-    return null;
+    try (PreparedStatement updateUserPs = holder(CFG.authJdbcUrl()).connection().prepareStatement(
+        "UPDATE public.user SET username = ?, password = ?, enabled = ?, account_non_expired = ?, " +
+        "account_non_locked = ?, credentials_non_expired = ? WHERE id = ?");
+         PreparedStatement deleteAuthoritiesPs = holder(CFG.authJdbcUrl()).connection().prepareStatement(
+             "DELETE FROM authority WHERE user_id = ?");
+         PreparedStatement insertAuthoritiesPs = holder(CFG.authJdbcUrl()).connection().prepareStatement(
+             "INSERT INTO authority (user_id, authority) VALUES (?, ?)")
+    ) {
+      updateUserPs.setString(1, authUser.getUsername());
+      updateUserPs.setString(2, authUser.getPassword());
+      updateUserPs.setBoolean(3, authUser.getEnabled());
+      updateUserPs.setBoolean(4, authUser.getAccountNonExpired());
+      updateUserPs.setBoolean(5, authUser.getAccountNonLocked());
+      updateUserPs.setBoolean(6, authUser.getCredentialsNonExpired());
+      updateUserPs.setObject(7, authUser.getId());
+      updateUserPs.executeUpdate();
+
+      deleteAuthoritiesPs.setObject(1, authUser.getId());
+      deleteAuthoritiesPs.executeUpdate();
+
+      for (AuthAuthorityEntity ae : authUser.getAuthorities()) {
+        insertAuthoritiesPs.setObject(1, authUser.getId());
+        insertAuthoritiesPs.setString(2, ae.getAuthority().name());
+        insertAuthoritiesPs.addBatch();
+      }
+      insertAuthoritiesPs.executeBatch();
+
+      return authUser;
+    } catch (SQLException e) {
+      throw new RuntimeException("Failed to update authUser", e);
+    }
   }
 
   @Override

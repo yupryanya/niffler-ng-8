@@ -1,43 +1,47 @@
 package guru.qa.niffler.test.web;
 
-import guru.qa.niffler.jupiter.extension.UsersQueueExtension;
-import guru.qa.niffler.jupiter.extension.UsersQueueExtension.StaticUser;
+import guru.qa.niffler.jupiter.annotation.User;
+import guru.qa.niffler.model.UserJson;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-
-import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.UserType;
-import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.UserType.Type.*;
 
 public class FriendsWebTest extends BaseTestWeb {
-    @Test
-    @ExtendWith(UsersQueueExtension.class)
-    void friendShouldBePresentInFriendsTable(@UserType(WITH_FRIEND) StaticUser user) {
-        login(user);
-        friendsPage.open()
-                .verifyFriendIsPresent(user.friend());
-    }
+  @User(
+      username = TEST_USER_NAME,
+      friends = 3
+  )
+  @Test
+  void friendShouldBePresentInFriendsTable(UserJson user) {
+    login(user);
+    friendsPage.open()
+        .verifyFriendsPresent(user.testData().friends());
+  }
 
-    @Test
-    @ExtendWith(UsersQueueExtension.class)
-    void friendTableShouldBeEmptyForNewUser(@UserType(EMPTY) StaticUser user) {
-        login(user);
-        friendsPage.open()
-                .verifyNoFriendsPresent();
-    }
+  @User()
+  @Test
+  void friendTableShouldBeEmptyForNewUser(UserJson user) {
+    login(user);
+    friendsPage.open()
+        .verifyNoFriendsPresent();
+  }
 
-    @Test
-    @ExtendWith(UsersQueueExtension.class)
-    void incomeInviteShouldBePresentInAllPeoplesTable(@UserType(WITH_INCOME_REQUEST) StaticUser user) {
-        login(user);
-        friendsPage.open()
-                .verifyIncomingRequestFrom(user.income());
-    }
+  @User(
+      username = TEST_USER_NAME,
+      incomeInvitations = 2
+  )
+  @Test
+  void incomeInviteShouldBePresentInAllPeoplesTable(UserJson user) {
+    login(user);
+    friendsPage.open()
+        .verifyIncomingRequests(user.testData().incomeInvitations());
+  }
 
-    @Test
-    @ExtendWith(UsersQueueExtension.class)
-    void outcomeInviteShouldBePresentInAllPeoplesTable(@UserType(WITH_OUTCOME_REQUEST) StaticUser user) {
-        login(user);
-        allPeoplePage.open()
-                .verifyOutcomingRequestTo(user.outcome());
-    }
+  @User(
+      outcomeInvitations = 1
+  )
+  @Test
+  void outcomeInviteShouldBePresentInAllPeoplesTable(UserJson user) {
+    login(user);
+    allPeoplePage.open()
+        .verifyOutcomeRequests(user.testData().outcomeInvitations());
+  }
 }
