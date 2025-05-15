@@ -2,6 +2,7 @@ package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.common.values.CurrencyValues;
+import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.Spend;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.UserJson;
@@ -27,7 +28,7 @@ public class SpendingTest extends BaseTestWeb {
 
     Selenide.open(CFG.frontUrl(), LoginPage.class)
         .doSuccessLogin(user.username(), user.testData().password())
-        .editSpending(user.testData().spends().getFirst().description())
+        .editSpend(user.testData().spends().getFirst().description())
         .editDescription(newDescription);
 
     new MainPage().checkThatTableContains(newDescription);

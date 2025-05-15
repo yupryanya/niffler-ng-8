@@ -19,6 +19,10 @@ public record UserJson(
     String fullname,
     @JsonProperty("currency")
     CurrencyValues currency,
+    @JsonProperty("photo")
+    String photo,
+    @JsonProperty("photoSmall")
+    String photoSmall,
     @JsonProperty("friendshipStatus")
     String friendshipStatus,
     @JsonIgnore
@@ -30,6 +34,8 @@ public record UserJson(
         nonExistentUserName(),
         null,
         CurrencyValues.RUB,
+        null,
+        null,
         null,
         new TestData(
             newValidPassword(),
@@ -49,6 +55,8 @@ public record UserJson(
         null,
         CurrencyValues.RUB,
         null,
+        null,
+        null,
         new TestData(
             password,
             null,
@@ -66,6 +74,8 @@ public record UserJson(
         this.username,
         this.fullname,
         this.currency,
+        this.photo,
+        this.photoSmall,
         this.friendshipStatus,
         new TestData(
             password,
@@ -84,6 +94,8 @@ public record UserJson(
         this.username,
         this.fullname,
         this.currency,
+        this.photo,
+        this.photoSmall,
         this.friendshipStatus,
         testData
     );
@@ -95,6 +107,8 @@ public record UserJson(
         this.username,
         this.fullname,
         this.currency,
+        this.photo,
+        this.photoSmall,
         this.friendshipStatus,
         new TestData(
             null,
