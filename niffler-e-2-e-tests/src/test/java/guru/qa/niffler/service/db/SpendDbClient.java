@@ -10,6 +10,7 @@ import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.service.SpendClient;
+import io.qameta.allure.Step;
 
 public class SpendDbClient implements SpendClient {
   private static final Config CFG = Config.getInstance();
@@ -28,6 +29,7 @@ public class SpendDbClient implements SpendClient {
   );
 
   @Override
+  @Step("Create spend with SQL")
   public SpendJson createSpend(SpendJson spend) {
     return xaTransactionTemplate.execute(() -> {
           SpendEntity spendEntity = SpendEntity.fromJson(spend);
@@ -50,6 +52,7 @@ public class SpendDbClient implements SpendClient {
   }
 
   @Override
+  @Step("Create category with SQL")
   public CategoryJson createCategory(CategoryJson categoryJson) {
     return xaTransactionTemplate.execute(() -> {
           return CategoryEntity.fromEntity(spend.createCategory(CategoryEntity.fromJson(categoryJson)));
@@ -58,6 +61,7 @@ public class SpendDbClient implements SpendClient {
   }
 
   @Override
+  @Step("Update category with SQL")
   public CategoryJson updateCategory(CategoryJson categoryJson) {
     return xaTransactionTemplate.execute(() -> {
           return CategoryEntity.fromEntity(spend.updateCategory(CategoryEntity.fromJson(categoryJson)));
