@@ -1,16 +1,13 @@
 package guru.qa.niffler.service.api;
 
 import guru.qa.niffler.api.UserApi;
-import guru.qa.niffler.config.Config;
+import guru.qa.niffler.api.core.RestClient;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.UserClient;
 import guru.qa.niffler.service.db.UserDbClient;
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
+import io.qameta.allure.Step;
 import retrofit2.Call;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.jackson.JacksonConverterFactory;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -19,26 +16,14 @@ import static guru.qa.niffler.model.UserJson.generateUserJson;
 import static org.apache.hc.core5.http.HttpStatus.SC_OK;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class UserApiClient implements UserClient {
-  private static final Config CFG = Config.getInstance();
+public class UserApiClient extends RestClient implements UserClient {
 
-  private final OkHttpClient client = new OkHttpClient.Builder()
-      .addInterceptor(new HttpLoggingInterceptor()
-          .setLevel(HttpLoggingInterceptor.Level.BODY))
-      .build();
+  private final UserApi userDataApi;
 
-  private final Retrofit retrofit = new Retrofit.Builder()
-      .baseUrl(CFG.userdataUrl())
-      .client(client)
-      .addConverterFactory(JacksonConverterFactory.create())
-      .build();
-  private final Retrofit retrofitAuth = new Retrofit.Builder()
-      .baseUrl(CFG.authUrl())
-      .client(client)
-      .addConverterFactory(JacksonConverterFactory.create())
-      .build();
-
-  private final UserApi userDataApi = retrofit.create(UserApi.class);
+  public UserApiClient() {
+    super(CFG.userdataUrl());
+    this.userDataApi = retrofit.create(UserApi.class);
+  }
 
   private <T> T execute(Call<T> call, int expectedStatusCode) {
     try {
@@ -50,19 +35,23 @@ public class UserApiClient implements UserClient {
     }
   }
 
-  //TODO: workaround - implement with API
+  //TODO: workaround - to run tests with API client
+  // implement with API after 7.2 lesson
   @Override
+  @Step("Create user with API")
   public UserJson createUser(UserJson user) {
     UserDbClient userDbClient = new UserDbClient();
     return userDbClient.createUser(user);
   }
 
   @Override
+  @Step("Create user with API")
   public UserJson createUser(String username, String password) {
     return createUser(generateUserJson(username, password));
   }
 
   @Override
+  @Step("Create friends with API")
   public void createFriends(UserJson user, int count) {
     if (count < 1) {
       throw new IllegalArgumentException("Count must be greater than 0");
@@ -79,6 +68,7 @@ public class UserApiClient implements UserClient {
   }
 
   @Override
+  @Step("Create outcome invitations with API")
   public void createOutcomeInvitations(UserJson user, int count) {
     if (count < 1) {
       throw new IllegalArgumentException("Count must be greater than 0");
@@ -93,6 +83,7 @@ public class UserApiClient implements UserClient {
   }
 
   @Override
+  @Step("Create income invitations with API")
   public void createIncomeInvitations(UserJson user, int count) {
     if (count < 1) {
       throw new IllegalArgumentException("Count must be greater than 0");
@@ -107,6 +98,7 @@ public class UserApiClient implements UserClient {
   }
 
   @Override
+  @Step("Find user by username with API")
   public Optional<UserJson> findUserByUsername(String username) {
     if (username == null || username.isEmpty()) {
       throw new IllegalArgumentException("Username cannot be null or empty");

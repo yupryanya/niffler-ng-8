@@ -12,6 +12,7 @@ import guru.qa.niffler.data.repository.impl.userdata.UserDataRepositoryHibernate
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.UserClient;
+import io.qameta.allure.Step;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -35,6 +36,7 @@ public class UserDbClient implements UserClient {
   );
 
   @Override
+  @Step("Create user with SQL")
   public UserJson createUser(UserJson user) {
     return xaTransactionTemplate.execute(() -> {
       UserDataEntity userEntity = userData.create(UserDataEntity.fromJson(user));
@@ -56,6 +58,7 @@ public class UserDbClient implements UserClient {
   }
 
   @Override
+  @Step("Create friends with SQL")
   public void createFriends(UserJson user, int count) {
     if (count < 1) {
       throw new IllegalArgumentException("Count must be greater than 0");
@@ -72,6 +75,7 @@ public class UserDbClient implements UserClient {
   }
 
   @Override
+  @Step("Create outcome invitations with SQL")
   public void createOutcomeInvitations(UserJson user, int count) {
     if (count < 1) {
       throw new IllegalArgumentException("Count must be greater than 0");
@@ -88,6 +92,7 @@ public class UserDbClient implements UserClient {
   }
 
   @Override
+  @Step("Create income invitations with SQL")
   public void createIncomeInvitations(UserJson user, int count) {
     if (count < 1) {
       throw new IllegalArgumentException("Count must be greater than 0");
@@ -103,20 +108,21 @@ public class UserDbClient implements UserClient {
     });
   }
 
-@Override
+  @Override
+  @Step("Find user by username with SQL")
   public Optional<UserJson> findUserByUsername(String username) {
     return userData.findByUsername(username)
         .map(UserDataEntity::fromEntity);
   }
 
+  @Step("Create user with SQL")
   public UserJson createUser(String username, String password) {
     return createUser(generateUserJson(username, password));
   }
 
+  @Step("Find user by ID with SQL")
   private UserDataEntity findUserById(UUID id) {
     return userData.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("User not found: " + id));
   }
-
-
 }

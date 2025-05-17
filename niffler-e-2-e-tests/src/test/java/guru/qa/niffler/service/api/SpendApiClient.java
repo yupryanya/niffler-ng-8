@@ -1,15 +1,13 @@
 package guru.qa.niffler.service.api;
 
 import guru.qa.niffler.api.SpendApi;
-import guru.qa.niffler.config.Config;
+import guru.qa.niffler.api.core.RestClient;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.service.SpendClient;
-import okhttp3.OkHttpClient;
+import io.qameta.allure.Step;
 import retrofit2.Call;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.jackson.JacksonConverterFactory;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,18 +15,14 @@ import java.util.List;
 import static org.apache.hc.core5.http.HttpStatus.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class SpendApiClient implements SpendClient {
-  private static final Config CFG = Config.getInstance();
+public class SpendApiClient extends RestClient implements SpendClient {
 
-  private final OkHttpClient client = new OkHttpClient.Builder()
-      .build();
-  private final Retrofit retrofit = new Retrofit.Builder()
-      .baseUrl(CFG.spendUrl())
-      .client(client)
-      .addConverterFactory(JacksonConverterFactory.create())
-      .build();
+  private SpendApi spendApi;
 
-  private final SpendApi spendApi = retrofit.create(SpendApi.class);
+  public SpendApiClient() {
+    super(CFG.spendUrl());
+    this.spendApi = retrofit.create(SpendApi.class);
+  }
 
   private <T> T execute(Call<T> call, int expectedStatusCode) {
     try {
@@ -41,36 +35,44 @@ public class SpendApiClient implements SpendClient {
   }
 
   @Override
+  @Step("Create spend with API")
   public SpendJson createSpend(SpendJson spend) {
     return execute(spendApi.addSpend(spend), SC_CREATED);
   }
 
   @Override
+  @Step("Create category with API")
   public CategoryJson createCategory(CategoryJson category) {
     return execute(spendApi.addCategory(category), SC_OK);
   }
 
   @Override
+  @Step("Update category with API")
   public CategoryJson updateCategory(CategoryJson category) {
     return execute(spendApi.updateCategory(category), SC_OK);
   }
 
+  @Step("Edit spend with API")
   public SpendJson editSpend(SpendJson spendJson) {
     return execute(spendApi.editSpend(spendJson), SC_OK);
   }
 
+  @Step("Get spend with API")
   public SpendJson getSpend(String username, String id) {
     return execute(spendApi.getSpend(id, username), SC_OK);
   }
 
+  @Step("Get spends with API")
   public List<SpendJson> getSpends(String username, String from, String to, String filterCurrency) {
     return execute(spendApi.getSpends(username, from, to, filterCurrency), SC_OK);
   }
 
+  @Step("Remove spends with API")
   public void removeSpends(String username, List<String> ids) {
     execute(spendApi.removeSpends(username, ids), SC_ACCEPTED);
   }
 
+  @Step("Get categories with API")
   public List<CategoryJson> getCategories(String username, boolean excludeArchived) {
     return execute(spendApi.getCategories(username, excludeArchived), SC_OK);
   }
