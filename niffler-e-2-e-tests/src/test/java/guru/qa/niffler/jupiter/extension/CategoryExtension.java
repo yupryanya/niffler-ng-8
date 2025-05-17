@@ -43,6 +43,15 @@ public class CategoryExtension implements
                 category.archived()
             );
             CategoryJson categoryCreated = spendClient.createCategory(categoryJson);
+            if (category.archived()) {
+              CategoryJson categoryUpdateJson = new CategoryJson(
+                  categoryCreated.id(),
+                  categoryName,
+                  username,
+                  category.archived()
+              );
+              categoryCreated = spendClient.updateCategory(categoryUpdateJson);
+            }
             categories.add(categoryCreated);
           }
 

@@ -135,6 +135,8 @@ public class UserDataEntity implements Serializable {
         entity.getFullname(),
         entity.getCurrency(),
         null,
+        null,
+        null,
         new TestData(
             null,
             new ArrayList<>(),
