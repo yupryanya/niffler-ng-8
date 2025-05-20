@@ -1,7 +1,7 @@
 package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
-import guru.qa.niffler.common.values.CurrencyValues;
+import guru.qa.niffler.common.values.Color;
 import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.ScreenshotTest;
 import guru.qa.niffler.jupiter.annotation.Spend;
@@ -9,6 +9,7 @@ import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserJson;
+import guru.qa.niffler.model.statistics.Bubble;
 import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.page.MainPage;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,8 @@ import org.junit.jupiter.api.Test;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Date;
+
+import static guru.qa.niffler.common.values.CurrencyValues.RUB;
 
 public class StatisticsTest extends BaseTestWeb {
   @User(
@@ -32,9 +35,9 @@ public class StatisticsTest extends BaseTestWeb {
         .doSuccessLogin(user.username(), user.testData().password())
         .verifyMainPageIsOpened()
         .verifyStatisticsImageMatchesExpected(expectedImage)
-        .verifyStatisticsLegendContains(
-            "Grocery 199.68 " + CurrencyValues.RUB.getSymbol(),
-            "Clothes 1699 " + CurrencyValues.RUB.getSymbol()
+        .verifyStatisticsLegendMatches(
+            new Bubble(Color.yellow, "Clothes 1699 " + RUB.getSymbol()),
+            new Bubble(Color.green, "Grocery 199.68 " + RUB.getSymbol())
         );
   }
 
@@ -64,7 +67,9 @@ public class StatisticsTest extends BaseTestWeb {
         .editSpend(user.testData().spends().getFirst().description())
         .editAmount("200.00");
     new MainPage().verifyStatisticsImageMatchesExpected(expectedImage)
-        .verifyStatisticsLegendContains("Grocery 299.1 " + CurrencyValues.RUB.getSymbol());
+        .verifyStatisticsLegendMatches(
+            new Bubble(Color.yellow, "Grocery 299.1 " + RUB.getSymbol())
+        );
   }
 
   @User(
@@ -84,7 +89,7 @@ public class StatisticsTest extends BaseTestWeb {
             null,
             false
         ),
-        CurrencyValues.RUB,
+        RUB,
         500.00,
         "Fish",
         null
@@ -95,15 +100,16 @@ public class StatisticsTest extends BaseTestWeb {
         .addSpend()
         .fillAllFields(spendJson)
         .verifyStatisticsImageMatchesExpected(expectedImage)
-        .verifyStatisticsLegendContains(
-            "Grocery 600 " + CurrencyValues.RUB.getSymbol()
+        .verifyStatisticsLegendMatches(
+            new Bubble(Color.yellow, "Grocery 600 " + RUB.getSymbol())
         );
   }
 
   @User(
       spends = {
           @Spend(category = "Grocery", description = "Bread", amount = 100.00),
-          @Spend(category = "Grocery", description = "Milk", amount = 99.10)
+          @Spend(category = "Grocery", description = "Milk", amount = 99.10),
+          @Spend(category = "Kids", description = "Toys", amount = 1109.00)
       }
   )
   @Test
@@ -115,7 +121,7 @@ public class StatisticsTest extends BaseTestWeb {
         .deleteSpend("Bread")
         .verifyStatisticsImageMatchesExpected(expectedImage)
         .verifyStatisticsLegendContains(
-            "Grocery 99.1 " + CurrencyValues.RUB.getSymbol()
+            new Bubble(Color.green, "Grocery 99.1 " + RUB.getSymbol())
         );
   }
 
@@ -135,9 +141,9 @@ public class StatisticsTest extends BaseTestWeb {
         .doSuccessLogin(user.username(), user.testData().password())
         .verifyMainPageIsOpened()
         .verifyStatisticsImageMatchesExpected(expectedImage)
-        .verifyStatisticsLegendContains(
-            "Grocery 100 " + CurrencyValues.RUB.getSymbol(),
-            "Archived 599.1 " + CurrencyValues.RUB.getSymbol()
+        .verifyStatisticsLegendMatchesInAnyOrder(
+            new Bubble(Color.green, "Archived 599.1 " + RUB.getSymbol()),
+            new Bubble(Color.yellow, "Grocery 100 " + RUB.getSymbol())
         );
   }
 }

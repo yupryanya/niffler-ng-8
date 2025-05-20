@@ -1,23 +1,24 @@
 package guru.qa.niffler.page;
 
-import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.condition.SpendsConditions;
+import guru.qa.niffler.model.SpendJson;
+import guru.qa.niffler.model.statistics.Bubble;
 import guru.qa.niffler.page.components.AlertDialog;
+import guru.qa.niffler.page.components.SpendTable;
 import guru.qa.niffler.page.components.StatisticsComponent;
 import guru.qa.niffler.utils.ScreenDiffResult;
 
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 import static com.codeborne.selenide.CollectionCondition.empty;
-import static com.codeborne.selenide.CollectionCondition.exactTextsCaseSensitiveInAnyOrder;
-import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
+import static guru.qa.niffler.condition.StatConditions.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class MainPage {
-  private final ElementsCollection tableRows = $$("#spendings tbody tr");
   private final SelenideElement statistics = $("#stat");
   private final SelenideElement spends = $("#spendings");
   private final SelenideElement searchField = $("input[aria-label='search']");
@@ -26,6 +27,7 @@ public class MainPage {
   private final SelenideElement deleteSpendButton = $("#delete");
 
   private StatisticsComponent statisticsComponent = new StatisticsComponent();
+  private SpendTable spendTable = new SpendTable();
 
   public MainPage searchSpendByDescription(String description) {
     if (clearSearchButton.isDisplayed()) {
@@ -37,8 +39,7 @@ public class MainPage {
 
   public EditSpendingPage editSpend(String spendDescription) {
     searchSpendByDescription(spendDescription);
-    tableRows.find(text(spendDescription))
-        .$$("td")
+    spendTable.getCellsBySpendDescription(spendDescription)
         .get(5)
         .click();
     return new EditSpendingPage();
@@ -50,8 +51,7 @@ public class MainPage {
   }
 
   public MainPage deleteSpend(String spendDescription) {
-    tableRows.find(text(spendDescription))
-        .$$("td")
+    spendTable.getCellsBySpendDescription(spendDescription)
         .get(0)
         .click();
     deleteSpendButton.click();
@@ -59,10 +59,10 @@ public class MainPage {
     return this;
   }
 
-  public void checkThatTableContains(String spendDescription) {
-    searchSpendByDescription(spendDescription);
-    tableRows.find(text(spendDescription))
-        .should(visible);
+  public void checkThatTableContains(SpendJson spend) {
+    searchSpendByDescription(spend.description());
+    spendTable.getTableRows()
+        .should(SpendsConditions.spends(spend));
   }
 
   public MainPage verifyMainPageIsOpened() {
@@ -77,15 +77,32 @@ public class MainPage {
     return this;
   }
 
-  public MainPage verifyStatisticsLegendContains(String... spends) {
+  public MainPage verifyStatisticsLegendMatches(Bubble... bubbles) {
     statisticsComponent.getStatisticsLegend()
-        .should(exactTextsCaseSensitiveInAnyOrder(spends));
+        .should(statBubblesExactOrder(bubbles));
+    return this;
+  }
+
+  public MainPage verifyStatisticsLegendMatchesInAnyOrder(Bubble... bubbles) {
+    statisticsComponent.getStatisticsLegend()
+        .should(statBubblesAnyOrder(bubbles));
+    return this;
+  }
+
+  public MainPage verifyStatisticsLegendContains(Bubble... bubbles) {
+    statisticsComponent.getStatisticsLegend()
+        .should(statBubblesContainsAll(bubbles));
     return this;
   }
 
   public MainPage verifyStatisticsLegendIsEmpty() {
     statisticsComponent.getStatisticsLegend()
-        .should(empty);
+        .shouldBe(empty);
     return this;
+  }
+
+  public void verifySpendTableMatches(List<SpendJson> spends) {
+    spendTable.getTableRows()
+        .should(SpendsConditions.spends(spends.toArray(new SpendJson[0])));
   }
 }
