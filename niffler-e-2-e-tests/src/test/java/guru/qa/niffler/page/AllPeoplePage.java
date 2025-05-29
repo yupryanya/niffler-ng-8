@@ -1,7 +1,7 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.Selenide;
+import com.codeborne.selenide.SelenideDriver;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.UserJson;
@@ -11,29 +11,27 @@ import java.util.List;
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byLinkText;
 import static com.codeborne.selenide.Selectors.byText;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
 
-public class AllPeoplePage {
+public class AllPeoplePage extends BasePage {
   protected static final Config CFG = Config.getInstance();
 
   private static final String ALL_PEOPLE_TAB_LABEL = "All people";
 
-  private final ElementsCollection allPeopleTableItems = $$("#all tr");
-  private final SelenideElement searchField = $("input[aria-label='search']");
-  private final SelenideElement clearSearchButton = $("#input-clear");
+  private final ElementsCollection allPeopleTableItems;
+  private final SelenideElement searchField;
+  private final SelenideElement clearSearchButton;
+  private final SelenideElement allPeopleTabLabel;
 
-  private String getUrl() {
-    return CFG.frontUrl() + "people/all";
-  }
-
-  public AllPeoplePage open() {
-    return Selenide.open(getUrl(), AllPeoplePage.class)
-        .verifyPageIsOpened();
+  public AllPeoplePage(SelenideDriver driver) {
+    super(driver);
+    this.allPeopleTableItems = driver.$$("#all tr");
+    this.searchField = driver.$("input[aria-label='search']");
+    this.clearSearchButton = driver.$("#input-clear");
+    this.allPeopleTabLabel = driver.$(byLinkText(ALL_PEOPLE_TAB_LABEL));
   }
 
   public AllPeoplePage verifyPageIsOpened() {
-    $(byLinkText(ALL_PEOPLE_TAB_LABEL))
+    allPeopleTabLabel
         .shouldHave(attribute("aria-selected", "true"));
     return this;
   }
