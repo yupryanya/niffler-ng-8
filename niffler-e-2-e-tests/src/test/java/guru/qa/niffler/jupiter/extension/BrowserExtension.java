@@ -1,7 +1,6 @@
 package guru.qa.niffler.jupiter.extension;
 
-import com.codeborne.selenide.Selenide;
-import com.codeborne.selenide.WebDriverRunner;
+import com.codeborne.selenide.SelenideDriver;
 import com.codeborne.selenide.logevents.SelenideLogger;
 import io.qameta.allure.Allure;
 import io.qameta.allure.selenide.AllureSelenide;
@@ -10,6 +9,8 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BrowserExtension implements
     BeforeEachCallback,
@@ -17,10 +18,22 @@ public class BrowserExtension implements
     TestExecutionExceptionHandler,
     LifecycleMethodExecutionExceptionHandler {
 
+  private static final ThreadLocal<List<SelenideDriver>> driversForThread = ThreadLocal.withInitial(ArrayList::new);
+
+  public List<SelenideDriver> drivers() {
+    return driversForThread.get();
+  }
+
+  public void addDriver(SelenideDriver driver) {
+    driversForThread.get().add(driver);
+  }
+
   @Override
   public void afterEach(ExtensionContext context) throws Exception {
-    if (WebDriverRunner.hasWebDriverStarted()) {
-      Selenide.closeWebDriver();
+    for (SelenideDriver driver : drivers()) {
+      if (driver.hasWebDriverStarted()) {
+        driver.close();
+      }
     }
   }
 
@@ -50,14 +63,16 @@ public class BrowserExtension implements
     throw throwable;
   }
 
-  private static void doScreenshot() {
-    if (WebDriverRunner.hasWebDriverStarted()) {
-      Allure.addAttachment(
-          "Screen on fail",
-          new ByteArrayInputStream(
-              ((TakesScreenshot) WebDriverRunner.getWebDriver()).getScreenshotAs(OutputType.BYTES)
-          )
-      );
+  private void doScreenshot() {
+    for (SelenideDriver driver : drivers()) {
+      if (driver.hasWebDriverStarted()) {
+        Allure.addAttachment(
+            "Screen on fail " + driver.getSessionId(),
+            new ByteArrayInputStream(
+                ((TakesScreenshot) driver.getWebDriver()).getScreenshotAs(OutputType.BYTES)
+            )
+        );
+      }
     }
   }
 }

@@ -2,21 +2,31 @@ package guru.qa.niffler.page;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideDriver;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.model.SpendJson;
 
-import static com.codeborne.selenide.Selenide.$;
+public class AddSpendingPage extends BasePage{
+  private final SelenideElement amountInput;
+  private final SelenideElement currencySelect;
+  private final ElementsCollection currencyOptions;
+  private final SelenideElement categoryInput;
+  private final SelenideElement dateInput;
+  private final SelenideElement descriptionInput;
+  private final SelenideElement addButton;
 
-public class AddSpendingPage {
-  private final SelenideElement amountInput = $("#amount");
-  private final SelenideElement currencySelect = $("#currency");
-  private final ElementsCollection currencyOptions = $("ul[role='listbox']").$$("li");
-  private final SelenideElement categoryInput = $("#category");
-  private final SelenideElement dateInput = $("input[name='date']");
-  private final SelenideElement descriptionInput = $("#description");
-  private final SelenideElement addButton = $("#save");
+  public AddSpendingPage(SelenideDriver driver) {
+    super(driver);
+    this.amountInput = driver.$("#amount");
+    this.currencySelect = driver.$("#currency");
+    this.currencyOptions = driver.$("ul[role='listbox']").$$("li");
+    this.categoryInput = driver.$("#category");
+    this.dateInput = driver.$("input[name='date']");
+    this.descriptionInput = driver.$("#description");
+    this.addButton = driver.$("#save");
+  }
 
-  public MainPage fillAllFields(SpendJson spend) {
+  public void fillAllFields(SpendJson spend) {
     amountInput.setValue(spend.amount().toString());
     currencySelect.click();
     currencyOptions.find(Condition.partialText(spend.currency().name())).click();
@@ -24,6 +34,5 @@ public class AddSpendingPage {
     dateInput.setValue(String.valueOf(spend.spendDate()));
     descriptionInput.setValue(spend.description());
     addButton.click();
-    return new MainPage();
   }
 }
