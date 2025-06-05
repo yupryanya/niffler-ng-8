@@ -1,7 +1,7 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.SelenideDriver;
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.UserJson;
@@ -10,30 +10,29 @@ import java.util.List;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byLinkText;
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$$;
 
-public class FriendsPage extends BasePage {
+public class FriendsPage {
   protected static final Config CFG = Config.getInstance();
 
   private static final String FRIENDS_TAB_LABEL = "Friends";
   private static final String NO_FRIENDS_TEXT = "There are no users yet";
 
-  private final SelenideElement friendsTab;
-  private final SelenideElement friendsTable;
-  private final ElementsCollection friendsTableItems;
-  private final ElementsCollection incomingRequestsTableItems;
-  private final SelenideElement searchField;
-  private final SelenideElement clearSearchButton;
-  private final SelenideElement friendsTabLabel;
+  private final SelenideElement friendsTab = $("#simple-tabpanel-friends");
+  private final SelenideElement friendsTable = $("#friends");
+  private final ElementsCollection friendsTableItems = $$("#friends tr");
+  private final ElementsCollection incomingRequestsTableItems = $$("#requests");
+  private final SelenideElement searchField = $("input[aria-label='search']");
+  private final SelenideElement clearSearchButton = $("#input-clear");
 
-  public FriendsPage(SelenideDriver driver) {
-    super(driver);
-    this.friendsTab = driver.$("#simple-tabpanel-friends");
-    this.friendsTable = driver.$("#friends");
-    this.friendsTableItems = driver.$$("#friends tr");
-    this.incomingRequestsTableItems = driver.$$("#requests");
-    this.searchField = driver.$("input[aria-label='search']");
-    this.clearSearchButton = driver.$("#input-clear");
-    this.friendsTabLabel = driver.$(byLinkText(FRIENDS_TAB_LABEL));
+  private String getUrl() {
+    return CFG.frontUrl() + "people/friends";
+  }
+
+  public FriendsPage open() {
+    return Selenide.open(getUrl(), FriendsPage.class)
+        .verifyPageIsOpened();
   }
 
   public FriendsPage searchFriend(String friend) {
@@ -45,7 +44,8 @@ public class FriendsPage extends BasePage {
   }
 
   public FriendsPage verifyPageIsOpened() {
-    friendsTabLabel.shouldHave(attribute("aria-selected", "true"));
+    $(byLinkText(FRIENDS_TAB_LABEL))
+        .shouldHave(attribute("aria-selected", "true"));
     return this;
   }
 
