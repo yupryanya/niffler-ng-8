@@ -1,7 +1,6 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.SelenideDriver;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.utils.ScreenDiffResult;
@@ -12,32 +11,19 @@ import java.awt.image.BufferedImage;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-public class ProfilePage extends BasePage {
+public class ProfilePage {
   protected static final Config CFG = Config.getInstance();
   public static final String URL = CFG.frontUrl() + "profile";
 
-  private final SelenideElement showArchivedCategoriesToggle;
-  private final ElementsCollection categories;
-  private final SelenideElement profilePicture;
-  private final SelenideElement defaultIcon;
-  private final SelenideElement uploadNewPictureButton;
-  private final SelenideElement saveChangesButton;
-
-  public ProfilePage(SelenideDriver driver) {
-    super(driver);
-    this.showArchivedCategoriesToggle = driver.$("input[type='checkbox']");
-    this.categories = driver.$$("div.MuiButtonBase-root[role='button']");
-    this.profilePicture = driver.$("#image__input").parent().$("img");
-    this.defaultIcon = driver.$("svg[data-testid='PersonIcon']");
-    this.uploadNewPictureButton = driver.$("#image__input");
-    this.saveChangesButton = driver.$("button[type='submit']");
-  }
-
-  private String getUrl() {
-    return CFG.frontUrl() + "people/friends";
-  }
+  private final SelenideElement showArchivedCategoriesToggle = $("input[type='checkbox']");
+  private final ElementsCollection categories = $$("div.MuiButtonBase-root[role='button']");
+  private final SelenideElement profilePicture = $("#image__input").parent().$("img");
+  private final SelenideElement defaultIcon = $("svg[data-testid='PersonIcon']");
+  private final SelenideElement uploadNewPictureButton = $("#image__input");
+  private final SelenideElement saveChangesButton = $("button[type='submit']");
 
   public SelenideElement findCategory(String name) {
     return categories.findBy(text(name));

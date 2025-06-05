@@ -1,5 +1,6 @@
 package guru.qa.niffler.test.web;
 
+import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.common.values.Color;
 import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.ScreenshotTest;
@@ -9,6 +10,8 @@ import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.model.statistics.Bubble;
+import guru.qa.niffler.page.LoginPage;
+import guru.qa.niffler.page.MainPage;
 import org.junit.jupiter.api.Test;
 
 import java.awt.image.BufferedImage;
@@ -28,9 +31,9 @@ public class StatisticsTest extends BaseTestWeb {
   @Test
   @ScreenshotTest(value = "img/expected-stat.png")
   void multipleCategoriesShouldBeDisplayedInStatisticsChart(UserJson user, BufferedImage expectedImage) throws IOException {
-    login(user);
-    mainPage
-        .getStatisticsComponent()
+    Selenide.open(CFG.frontUrl(), LoginPage.class)
+        .doSuccessLogin(user.username(), user.testData().password())
+        .verifyMainPageIsOpened()
         .verifyStatisticsImageMatchesExpected(expectedImage)
         .verifyStatisticsLegendMatches(
             new Bubble(Color.yellow, "Clothes 1699 " + RUB.getSymbol()),
@@ -42,9 +45,9 @@ public class StatisticsTest extends BaseTestWeb {
   @Test
   @ScreenshotTest(value = "img/empty-stat.png")
   void statisticsChartShouldBeEmptyForNewUser(UserJson user, BufferedImage expectedImage) throws IOException {
-    login(user);
-    mainPage
-        .getStatisticsComponent()
+    Selenide.open(CFG.frontUrl(), LoginPage.class)
+        .doSuccessLogin(user.username(), user.testData().password())
+        .verifyMainPageIsOpened()
         .verifyStatisticsImageMatchesExpected(expectedImage)
         .verifyStatisticsLegendIsEmpty();
   }
@@ -58,15 +61,12 @@ public class StatisticsTest extends BaseTestWeb {
   @Test
   @ScreenshotTest(value = "img/edited-amount-stat.png")
   void statisticsChartShouldChangeWhenEditSpendAmount(UserJson user, BufferedImage expectedImage) throws IOException {
-    login(user);
-    mainPage
-        .getSpendTable()
-        .editSpend(user.testData().spends().getFirst().description());
-    editSpendingPage
+    Selenide.open(CFG.frontUrl(), LoginPage.class)
+        .doSuccessLogin(user.username(), user.testData().password())
+        .verifyMainPageIsOpened()
+        .editSpend(user.testData().spends().getFirst().description())
         .editAmount("200.00");
-    mainPage
-        .getStatisticsComponent()
-        .verifyStatisticsImageMatchesExpected(expectedImage)
+    new MainPage().verifyStatisticsImageMatchesExpected(expectedImage)
         .verifyStatisticsLegendMatches(
             new Bubble(Color.yellow, "Grocery 299.1 " + RUB.getSymbol())
         );
@@ -94,14 +94,11 @@ public class StatisticsTest extends BaseTestWeb {
         "Fish",
         null
     );
-    login(user);
-    mainPage
-        .getSpendTable()
-        .addSpend();
-    addSpendingPage
-        .fillAllFields(spendJson);
-    mainPage
-        .getStatisticsComponent()
+    Selenide.open(CFG.frontUrl(), LoginPage.class)
+        .doSuccessLogin(user.username(), user.testData().password())
+        .verifyMainPageIsOpened()
+        .addSpend()
+        .fillAllFields(spendJson)
         .verifyStatisticsImageMatchesExpected(expectedImage)
         .verifyStatisticsLegendMatches(
             new Bubble(Color.yellow, "Grocery 600 " + RUB.getSymbol())
@@ -118,12 +115,10 @@ public class StatisticsTest extends BaseTestWeb {
   @Test
   @ScreenshotTest(value = "img/delete-spend-stat.png")
   void statisticsChartShouldChangeWhenDeleteSpend(UserJson user, BufferedImage expectedImage) throws IOException {
-    login(user);
-    mainPage
-        .getSpendTable()
-        .deleteSpend("Bread");
-    mainPage
-        .getStatisticsComponent()
+    Selenide.open(CFG.frontUrl(), LoginPage.class)
+        .doSuccessLogin(user.username(), user.testData().password())
+        .verifyMainPageIsOpened()
+        .deleteSpend("Bread")
         .verifyStatisticsImageMatchesExpected(expectedImage)
         .verifyStatisticsLegendContains(
             new Bubble(Color.green, "Grocery 99.1 " + RUB.getSymbol())
@@ -142,9 +137,9 @@ public class StatisticsTest extends BaseTestWeb {
   @Test
   @ScreenshotTest(value = "img/archive-spend-stat.png")
   void statisticsChartShouldDisplayArchivedSpends(UserJson user, BufferedImage expectedImage) throws IOException {
-    login(user);
-    mainPage
-        .getStatisticsComponent()
+    Selenide.open(CFG.frontUrl(), LoginPage.class)
+        .doSuccessLogin(user.username(), user.testData().password())
+        .verifyMainPageIsOpened()
         .verifyStatisticsImageMatchesExpected(expectedImage)
         .verifyStatisticsLegendMatchesInAnyOrder(
             new Bubble(Color.green, "Archived 599.1 " + RUB.getSymbol()),

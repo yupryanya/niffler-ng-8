@@ -1,10 +1,13 @@
 package guru.qa.niffler.test.web;
 
+import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.common.values.CurrencyValues;
 import guru.qa.niffler.jupiter.annotation.Spend;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserJson;
+import guru.qa.niffler.page.LoginPage;
+import guru.qa.niffler.page.MainPage;
 import org.junit.jupiter.api.Test;
 
 public class SpendingTest extends BaseTestWeb {
@@ -22,11 +25,9 @@ public class SpendingTest extends BaseTestWeb {
   void spendingDescriptionShouldBeUpdatedByTableAction(UserJson user) {
     final String newDescription = "Обучение Niffler NG2";
 
-    login(user);
-    mainPage
-        .getSpendTable()
-        .editSpend(user.testData().spends().getFirst().description());
-    editSpendingPage
+    Selenide.open(CFG.frontUrl(), LoginPage.class)
+        .doSuccessLogin(user.username(), user.testData().password())
+        .editSpend(user.testData().spends().getFirst().description())
         .editDescription(newDescription);
 
     SpendJson originalSpend = user.testData().spends().getFirst();
@@ -39,9 +40,7 @@ public class SpendingTest extends BaseTestWeb {
         newDescription,
         originalSpend.username()
     );
-    mainPage
-        .getSpendTable()
-        .checkThatTableContains(updatedSpend);
+    new MainPage().checkThatTableContains(updatedSpend);
   }
 
   @User(
@@ -53,9 +52,9 @@ public class SpendingTest extends BaseTestWeb {
   )
   @Test
   void allSpendsShouldBeDisplayed(UserJson user) {
-    login(user);
-    mainPage
-        .getSpendTable()
+    Selenide.open(CFG.frontUrl(), LoginPage.class)
+        .doSuccessLogin(user.username(), user.testData().password())
+        .verifyMainPageIsOpened()
         .verifySpendTableMatches(user.testData().spends());
   }
 }

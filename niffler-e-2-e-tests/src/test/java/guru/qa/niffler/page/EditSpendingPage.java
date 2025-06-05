@@ -1,19 +1,13 @@
 package guru.qa.niffler.page;
 
-import com.codeborne.selenide.SelenideDriver;
 import com.codeborne.selenide.SelenideElement;
 
-public class EditSpendingPage extends BasePage {
-  private final SelenideElement descriptionInput;
-  private final SelenideElement amountInput;
-  private final SelenideElement submitBtn;
+import static com.codeborne.selenide.Selenide.$;
 
-  public EditSpendingPage(SelenideDriver driver) {
-    super(driver);
-    this.descriptionInput = driver.$("#description");
-    this.amountInput = driver.$("#amount");
-    this.submitBtn = driver.$("#save");
-  }
+public class EditSpendingPage {
+  private final SelenideElement descriptionInput = $("#description");
+  private final SelenideElement amountInput = $("#amount");
+  private final SelenideElement submitBtn = $("#save");
 
   public void editDescription(String description) {
     descriptionInput.clear();

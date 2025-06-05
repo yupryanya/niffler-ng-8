@@ -1,27 +1,23 @@
 package guru.qa.niffler.page;
 
-import com.codeborne.selenide.SelenideDriver;
 import com.codeborne.selenide.SelenideElement;
 
 import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Selenide.$;
 
-public class SignUpSuccessPage extends BasePage{
-    private final SelenideElement successMessage;
-    private final SelenideElement loginButton;
+public class SignUpSuccessPage {
+    private final SelenideElement successMessage = $(".form__paragraph.form__paragraph_success");
+    private final SelenideElement LoginButton = $("a[class='form_sign-in']");
 
     public static final String SUCCESSFULLY_REGISTERED = "Congratulations! You've registered!";
 
-    public SignUpSuccessPage(SelenideDriver driver) {
-        super(driver);
-        this.successMessage = driver.$(".form__paragraph.form__paragraph_success");
-        this.loginButton = driver.$("a[class='form_sign-in']");
+    public LoginPage clickLoginButton() {
+        LoginButton.click();
+        return new LoginPage();
     }
 
-    public void clickLoginButton() {
-        loginButton.click();
-    }
-
-    public void verifySuccessSignUpMessage() {
+    public SignUpPage verifySuccessSignUpMessage() {
         successMessage.shouldHave(text(SUCCESSFULLY_REGISTERED));
+        return new SignUpPage();
     }
 }
