@@ -4,6 +4,8 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.spend.CategoryDao;
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,11 +17,12 @@ import java.util.UUID;
 
 import static guru.qa.niffler.data.tpl.Connections.holder;
 
+@ParametersAreNonnullByDefault
 public class CategoryDaoJdbc implements CategoryDao {
   private static final Config CFG = Config.getInstance();
 
   @Override
-  public CategoryEntity createCategory(CategoryEntity category) {
+  public @Nonnull CategoryEntity createCategory(CategoryEntity category) {
     try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
         "INSERT INTO category (name, username, archived) VALUES (?, ?, ?)",
         Statement.RETURN_GENERATED_KEYS)) {
@@ -92,7 +95,7 @@ public class CategoryDaoJdbc implements CategoryDao {
   }
 
   @Override
-  public List<CategoryEntity> findAllCategoriesByUserName(String userName) {
+  public @Nonnull List<CategoryEntity> findAllCategoriesByUserName(String userName) {
     try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
         "SELECT id, * FROM category WHERE username = ?")) {
       ps.setString(1, userName);
@@ -127,7 +130,7 @@ public class CategoryDaoJdbc implements CategoryDao {
   }
 
   @Override
-  public CategoryEntity updateCategory(CategoryEntity category) {
+  public @Nonnull CategoryEntity updateCategory(CategoryEntity category) {
     try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
         "UPDATE category SET name = ?, username = ?, archived = ? WHERE id = ?")) {
       ps.setString(1, category.getName());
@@ -143,7 +146,7 @@ public class CategoryDaoJdbc implements CategoryDao {
   }
 
   @Override
-  public List<CategoryEntity> findAll() {
+  public @Nonnull List<CategoryEntity> findAll() {
     try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
         "SELECT * FROM category")) {
       ps.execute();

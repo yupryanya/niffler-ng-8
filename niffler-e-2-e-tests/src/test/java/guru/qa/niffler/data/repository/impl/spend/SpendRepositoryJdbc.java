@@ -10,6 +10,8 @@ import guru.qa.niffler.data.entity.spend.SpendEntity;
 import guru.qa.niffler.data.mapper.SpendEntityRowMapper;
 import guru.qa.niffler.data.repository.SpendRepository;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,6 +20,7 @@ import java.util.UUID;
 
 import static guru.qa.niffler.data.tpl.Connections.holder;
 
+@ParametersAreNonnullByDefault
 public class SpendRepositoryJdbc implements SpendRepository {
   private static final Config CFG = Config.getInstance();
 
@@ -25,7 +28,7 @@ public class SpendRepositoryJdbc implements SpendRepository {
   private final CategoryDao categoryDao = new CategoryDaoJdbc();
 
   @Override
-  public SpendEntity createSpend(SpendEntity spend) {
+  public @Nonnull SpendEntity createSpend(SpendEntity spend) {
     UUID categoryId = spend.getCategory().getId();
 
     if (categoryId == null || categoryDao.findCategoryById(categoryId).isEmpty()) {
@@ -35,7 +38,7 @@ public class SpendRepositoryJdbc implements SpendRepository {
   }
 
   @Override
-  public SpendEntity updateSpend(SpendEntity spend) {
+  public @Nonnull SpendEntity updateSpend(SpendEntity spend) {
     try (PreparedStatement psSpend = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
         "UPDATE spend SET spend_date = ?, currency = ?, amount = ?, description = ?, category_id = ? WHERE id = ?"
     )) {
@@ -96,12 +99,12 @@ public class SpendRepositoryJdbc implements SpendRepository {
   }
 
   @Override
-  public CategoryEntity createCategory(CategoryEntity category) {
+  public @Nonnull CategoryEntity createCategory(CategoryEntity category) {
     return categoryDao.createCategory(category);
   }
 
   @Override
-  public CategoryEntity updateCategory(CategoryEntity category) {
+  public @Nonnull CategoryEntity updateCategory(CategoryEntity category) {
     return categoryDao.updateCategory(category);
   }
 

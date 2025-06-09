@@ -8,11 +8,14 @@ import guru.qa.niffler.data.tpl.DataSources;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@ParametersAreNonnullByDefault
 public class AuthUserDaoSpringJdbc implements AuthUserDao {
   private static final Config CFG = Config.getInstance();
 
@@ -22,7 +25,7 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
     this.jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));  }
 
   @Override
-  public AuthUserEntity createUserAuth(AuthUserEntity authUser) {
+  public @Nonnull AuthUserEntity createUserAuth(AuthUserEntity authUser) {
     var keyHolder = new GeneratedKeyHolder();
     jdbcTemplate.update(connection -> {
       var ps = connection.prepareStatement(
@@ -59,7 +62,7 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
   }
 
   @Override
-  public List<AuthUserEntity> findAll() {
+  public @Nonnull List<AuthUserEntity> findAll() {
     return jdbcTemplate.query(
         "SELECT * FROM public.user",
         AuthUserEntityRowMapper.instance

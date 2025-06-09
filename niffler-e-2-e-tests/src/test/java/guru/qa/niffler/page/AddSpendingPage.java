@@ -1,28 +1,40 @@
 package guru.qa.niffler.page;
 
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.model.SpendJson;
+import guru.qa.niffler.page.components.SpendForm;
+import io.qameta.allure.Step;
 
+import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
 
 public class AddSpendingPage {
-  private final SelenideElement amountInput = $("#amount");
-  private final SelenideElement currencySelect = $("#currency");
-  private final ElementsCollection currencyOptions = $("ul[role='listbox']").$$("li");
-  private final SelenideElement categoryInput = $("#category");
-  private final SelenideElement dateInput = $("input[name='date']");
-  private final SelenideElement descriptionInput = $("#description");
+  private static final String ADD_SPENDING_LABEL = "Add new spending";
   private final SelenideElement addButton = $("#save");
 
-  public MainPage fillAllFields(SpendJson spend) {
-    amountInput.setValue(spend.amount().toString());
-    currencySelect.click();
-    currencyOptions.find(Condition.partialText(spend.currency().name())).click();
-    categoryInput.setValue(spend.category().name());
-    dateInput.setValue(String.valueOf(spend.spendDate()));
-    descriptionInput.setValue(spend.description());
+  private SpendForm spendForm = new SpendForm();
+
+  @Step("Verify 'Add spending' page is opened")
+  public AddSpendingPage verifyPageIsOpened() {
+    $("h2").shouldHave(text(ADD_SPENDING_LABEL));
+    return this;
+  }
+
+  @Step("Fill all fields with spend data")
+  public AddSpendingPage fillAllFields(SpendJson spend) {
+    verifyPageIsOpened();
+    spendForm
+        .setAmount(spend.amount().toString())
+        .setCurrency(spend.currency().name())
+        .setCategory(spend.category().name())
+        .setDate(String.valueOf(spend.spendDate()))
+        .setDate(String.valueOf(spend.spendDate()))
+        .setDescription(spend.description());
+    return this;
+  }
+
+  @Step("Click confirm button")
+  public MainPage clickConfirmButton() {
     addButton.click();
     return new MainPage();
   }

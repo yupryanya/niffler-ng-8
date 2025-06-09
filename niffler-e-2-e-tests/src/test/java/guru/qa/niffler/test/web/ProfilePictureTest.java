@@ -16,10 +16,10 @@ public class ProfilePictureTest extends BaseTestWeb {
   @Test
   @ScreenshotTest(value = "img/default-profile-picture.png", rewriteExpected = true)
   void defaultProfilePictureIsDisplayed(UserJson user, BufferedImage expectedImage) throws IOException {
-    Selenide.open(CFG.authUrl(), LoginPage.class)
-        .doSuccessLogin(user.username(), user.testData().password())
-        .verifyMainPageIsOpened();
-    Selenide.open(ProfilePage.URL, ProfilePage.class)
+    login(user);
+    mainPage
+        .getHeader()
+        .toProfilePage()
         .verifyDefaultProfilePictureIsDisplayed(expectedImage);
   }
 
@@ -27,10 +27,10 @@ public class ProfilePictureTest extends BaseTestWeb {
   @Test
   @ScreenshotTest(value = "img/profile-picture.png")
   void profilePictureShouldBeDisplayedAfterLoad(UserJson user, BufferedImage expectedImage) throws IOException {
-    Selenide.open(CFG.authUrl(), LoginPage.class)
-        .doSuccessLogin(user.username(), user.testData().password())
-        .verifyMainPageIsOpened();
-    Selenide.open(ProfilePage.URL, ProfilePage.class)
+    login(user);
+    mainPage
+        .getHeader()
+        .toProfilePage()
         .setProfilePicture("img/profile-picture.png")
         .verifyProfilePictureIsDisplayed(expectedImage);
   }

@@ -4,6 +4,8 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.auth.AuthUserDao;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,11 +16,12 @@ import java.util.UUID;
 
 import static guru.qa.niffler.data.tpl.Connections.holder;
 
+@ParametersAreNonnullByDefault
 public class AuthUserDaoJdbc implements AuthUserDao {
   private static final Config CFG = Config.getInstance();
 
   @Override
-  public AuthUserEntity createUserAuth(AuthUserEntity authUser) {
+  public @Nonnull AuthUserEntity createUserAuth(AuthUserEntity authUser) {
     try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
         "INSERT INTO public.user (username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired)" +
             "VALUES (?, ?, ?, ?, ?, ?)",
@@ -86,7 +89,7 @@ public class AuthUserDaoJdbc implements AuthUserDao {
   }
 
   @Override
-  public List<AuthUserEntity> findAll() {
+  public @Nonnull List<AuthUserEntity> findAll() {
     try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
         "SELECT * FROM public.user")) {
       ps.execute();

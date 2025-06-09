@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import guru.qa.niffler.common.values.CurrencyValues;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -28,7 +29,7 @@ public record UserJson(
     @JsonIgnore
     TestData testData
 ) {
-  public static UserJson generateRandomUserJson() {
+  public @Nonnull static UserJson generateRandomUserJson() {
     return new UserJson(
         null,
         nonExistentUserName(),
@@ -48,7 +49,7 @@ public record UserJson(
     );
   }
 
-  public static UserJson generateUserJson(String username, String password) {
+  public @Nonnull static UserJson generateUserJson(String username, String password) {
     return new UserJson(
         null,
         username,
@@ -68,7 +69,7 @@ public record UserJson(
     );
   }
 
-  public UserJson withPassword(String password) {
+  public @Nonnull UserJson withPassword(String password) {
     return new UserJson(
         this.id,
         this.username,
@@ -88,7 +89,7 @@ public record UserJson(
     );
   }
 
-  public UserJson withTestData(TestData testData) {
+  public @Nonnull UserJson withTestData(TestData testData) {
     return new UserJson(
         this.id,
         this.username,
@@ -101,7 +102,7 @@ public record UserJson(
     );
   }
 
-  public UserJson withEmptyTestData() {
+  public @Nonnull UserJson withEmptyTestData() {
     return new UserJson(
         this.id,
         this.username,

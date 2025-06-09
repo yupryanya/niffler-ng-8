@@ -9,13 +9,17 @@ import io.qameta.allure.Step;
 import retrofit2.Call;
 import retrofit2.Response;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Optional;
 
 import static guru.qa.niffler.model.UserJson.generateUserJson;
 import static org.apache.hc.core5.http.HttpStatus.SC_OK;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@ParametersAreNonnullByDefault
 public class UserApiClient extends RestClient implements UserClient {
 
   private final UserApi userDataApi;
@@ -25,11 +29,11 @@ public class UserApiClient extends RestClient implements UserClient {
     this.userDataApi = retrofit.create(UserApi.class);
   }
 
-  private <T> T execute(Call<T> call, int expectedStatusCode) {
+  private @Nonnull <T> T execute(Call<T> call, int expectedStatusCode) {
     try {
       Response<T> response = call.execute();
       assertEquals(expectedStatusCode, response.code(), "Unexpected HTTP status code");
-      return response.body();
+      return Objects.requireNonNull(response.body());
     } catch (IOException e) {
       throw new AssertionError("Failed to execute API request", e);
     }

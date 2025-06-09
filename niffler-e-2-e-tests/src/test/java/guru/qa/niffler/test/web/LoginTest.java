@@ -16,7 +16,8 @@ public class LoginTest extends BaseTestWeb{
     @Test
     void shouldLoginWithValidCredentials(UserJson user) {
         Selenide.open(CFG.authUrl(), LoginPage.class)
-                .doSuccessLogin(user.username(), user.testData().password())
+                .doLogin(user.username(), user.testData().password());
+        mainPage
                 .verifyMainPageIsOpened();
     }
 

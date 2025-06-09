@@ -8,6 +8,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,8 +17,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+@ParametersAreNonnullByDefault
 public class SpendsConditions {
-  public static WebElementsCondition spends(SpendJson... expectedSpends) {
+  public static @Nonnull WebElementsCondition spends(SpendJson... expectedSpends) {
     if (ArrayUtils.isEmpty(expectedSpends)) {
       throw new IllegalArgumentException("Expected spends cannot be null or empty");
     }

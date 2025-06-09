@@ -9,16 +9,19 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@ParametersAreNonnullByDefault
 public class SpendDaoSpringJdbc implements SpendDao {
   private static final Config CFG = Config.getInstance();
 
   @Override
-  public SpendEntity createSpend(SpendEntity spend) {
+  public @Nonnull SpendEntity createSpend(SpendEntity spend) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.spendJdbcUrl()));
     KeyHolder kh = new GeneratedKeyHolder();
     jdbcTemplate.update(connection -> {
@@ -54,7 +57,7 @@ public class SpendDaoSpringJdbc implements SpendDao {
   }
 
   @Override
-  public List<SpendEntity> findAllSpendsByUserName(String userName) {
+  public @Nonnull List<SpendEntity> findAllSpendsByUserName(String userName) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.spendJdbcUrl()));
     return jdbcTemplate.query(
         "SELECT * FROM spend WHERE username = ?",
@@ -78,7 +81,7 @@ public class SpendDaoSpringJdbc implements SpendDao {
   }
 
   @Override
-  public List<SpendEntity> findAll() {
+  public @Nonnull List<SpendEntity> findAll() {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.spendJdbcUrl()));
     return jdbcTemplate.query(
         "SELECT * FROM spend",

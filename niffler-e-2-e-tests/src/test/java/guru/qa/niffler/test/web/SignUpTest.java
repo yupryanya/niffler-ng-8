@@ -5,6 +5,7 @@ import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.page.SignUpPage;
+import guru.qa.niffler.page.SignUpSuccessPage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -21,7 +22,8 @@ public class SignUpTest extends BaseTestWeb {
     void shouldRegisterNewUser() {
         Selenide.open(CFG.frontUrl(), LoginPage.class)
                 .navigateToSignUpPage()
-                .doSuccessSignUp(nonExistentUserName(), newValidPassword())
+                .doSignUp(nonExistentUserName(), newValidPassword());
+        new SignUpSuccessPage()
                 .verifySuccessSignUpMessage();
     }
 

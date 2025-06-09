@@ -1,14 +1,15 @@
 package guru.qa.niffler.test.web;
 
-import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.common.values.CurrencyValues;
 import guru.qa.niffler.jupiter.annotation.Spend;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserJson;
-import guru.qa.niffler.page.LoginPage;
-import guru.qa.niffler.page.MainPage;
 import org.junit.jupiter.api.Test;
+
+import java.util.Date;
+
+import static guru.qa.niffler.utils.RandomDataUtils.randomDate;
 
 public class SpendingTest extends BaseTestWeb {
   @User(
@@ -22,25 +23,17 @@ public class SpendingTest extends BaseTestWeb {
       }
   )
   @Test
-  void spendingDescriptionShouldBeUpdatedByTableAction(UserJson user) {
+  void shouldUpdateSpendingDescriptionWhenEditedInTable(UserJson user) {
     final String newDescription = "Обучение Niffler NG2";
-
-    Selenide.open(CFG.frontUrl(), LoginPage.class)
-        .doSuccessLogin(user.username(), user.testData().password())
+    login(user);
+    mainPage.getSpendsTable()
         .editSpend(user.testData().spends().getFirst().description())
         .editDescription(newDescription);
-
     SpendJson originalSpend = user.testData().spends().getFirst();
-    SpendJson updatedSpend = new SpendJson(
-        originalSpend.id(),
-        originalSpend.spendDate(),
-        originalSpend.category(),
-        originalSpend.currency(),
-        originalSpend.amount(),
-        newDescription,
-        originalSpend.username()
-    );
-    new MainPage().checkThatTableContains(updatedSpend);
+    SpendJson updatedSpend = originalSpend.withDescription(newDescription);
+    mainPage
+        .getSpendsTable()
+        .checkThatTableContains(updatedSpend);
   }
 
   @User(
@@ -51,10 +44,44 @@ public class SpendingTest extends BaseTestWeb {
       }
   )
   @Test
-  void allSpendsShouldBeDisplayed(UserJson user) {
-    Selenide.open(CFG.frontUrl(), LoginPage.class)
-        .doSuccessLogin(user.username(), user.testData().password())
-        .verifyMainPageIsOpened()
+  void shouldDisplayAllSpendsInTable(UserJson user) {
+    login(user);
+    mainPage
+        .getSpendsTable()
         .verifySpendTableMatches(user.testData().spends());
+  }
+
+  @User()
+  @Test
+  void shouldSuccessfullyAddNewSpending(UserJson user) {
+    SpendJson spend = SpendJson.generateRandomSpendJsonWithUsername(user.username());
+    login(user);
+    mainPage
+        .getHeader()
+        .navigateToAddSpendingPage()
+        .fillAllFields(spend)
+        .clickConfirmButton()
+        .getSpendsTable()
+        .checkThatTableContains(spend);
+  }
+
+  @User(
+      spends = {
+          @Spend(category = "Grocery", description = "Milk", amount = 90.10)
+      }
+  )
+  @Test
+  void shouldUpdateSpendingDateWhenEditedWithCalendar(UserJson user) {
+    SpendJson spend = user.testData().spends().getFirst();
+    Date newDate = randomDate();
+
+    login(user);
+    mainPage
+        .getSpendsTable()
+        .editSpend(spend.description())
+        .editDateWithCalendar(newDate);
+    mainPage
+        .getSpendsTable()
+        .checkThatTableContains(spend.withSpendDate(newDate));
   }
 }

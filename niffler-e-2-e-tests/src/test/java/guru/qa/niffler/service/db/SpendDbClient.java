@@ -12,6 +12,9 @@ import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.service.SpendClient;
 import io.qameta.allure.Step;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@ParametersAreNonnullByDefault
 public class SpendDbClient implements SpendClient {
   private static final Config CFG = Config.getInstance();
 
