@@ -20,7 +20,7 @@ public class StatisticsDiagram {
   private final SelenideElement statisticsDoughnutChart = $("canvas[role='img']");
   private final SelenideElement statisticsLegend = $("#legend-container");
 
-  public BufferedImage getStatisticImage() {
+  private BufferedImage getStatisticImage() {
     sleep(3000);
     try {
       return ImageIO.read(statisticsDoughnutChart.screenshot());
@@ -29,7 +29,7 @@ public class StatisticsDiagram {
     }
   }
 
-  public ElementsCollection getStatisticsLegend() {
+  private ElementsCollection getStatisticsLegend() {
     return statisticsLegend.$$("li");
   }
 

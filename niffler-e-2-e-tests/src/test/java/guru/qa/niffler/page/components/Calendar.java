@@ -16,6 +16,7 @@ public class Calendar {
 
   private final String previousMonthButton = "button[title='Previous month']";
   private final String nextMonthButton = "button[title='Next month']";
+  private final String yearsContainer = "div.MuiYearCalendar-root";
   private final String daysContainer = "div.MuiDayCalendar-monthContainer";
   private final String monthAndYearLabel = "div.MuiPickersCalendarHeader-label";
   private final String selectYearButton = "button[aria-label='calendar view is open, switch to year view']";
@@ -40,7 +41,7 @@ public class Calendar {
   @Step("Set year with calendar")
   public Calendar setYear(int year) {
     self.$(selectYearButton).click();
-    self.$("div.MuiYearCalendar-root")
+    self.$(yearsContainer)
         .$$("button")
         .findBy(text(String.valueOf(year + 1900)))
         .click();

@@ -25,7 +25,7 @@ public record SpendJson(
     @JsonProperty("username")
     String username) {
 
-  public static SpendJson generateRandomSpendJsonWithUsername(String username) {
+  public static SpendJson randomSpendWithUsername(String username) {
     return new SpendJson(
         null,
         new Date(),

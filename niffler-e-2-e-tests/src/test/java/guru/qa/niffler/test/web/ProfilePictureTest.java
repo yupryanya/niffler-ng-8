@@ -1,11 +1,8 @@
 package guru.qa.niffler.test.web;
 
-import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.jupiter.annotation.ScreenshotTest;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.UserJson;
-import guru.qa.niffler.page.LoginPage;
-import guru.qa.niffler.page.ProfilePage;
 import org.junit.jupiter.api.Test;
 
 import java.awt.image.BufferedImage;
@@ -14,7 +11,7 @@ import java.io.IOException;
 public class ProfilePictureTest extends BaseTestWeb {
   @User()
   @Test
-  @ScreenshotTest(value = "img/default-profile-picture.png", rewriteExpected = true)
+  @ScreenshotTest(value = "img/default-profile-picture.png")
   void defaultProfilePictureIsDisplayed(UserJson user, BufferedImage expectedImage) throws IOException {
     login(user);
     mainPage

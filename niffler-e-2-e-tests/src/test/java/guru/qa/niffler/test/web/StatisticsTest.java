@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import static guru.qa.niffler.common.values.CurrencyValues.RUB;
+import static guru.qa.niffler.utils.RandomDataUtils.newDescription;
 
 public class StatisticsTest extends BaseTestWeb {
   @User(
@@ -82,16 +83,11 @@ public class StatisticsTest extends BaseTestWeb {
     SpendJson spendJson = new SpendJson(
         null,
         new Date(),
-        new CategoryJson(
-            null,
-            "Grocery",
-            null,
-            false
-        ),
+        new CategoryJson(null, "Grocery", user.username(), false),
         RUB,
         500.00,
-        "Fish",
-        null
+        newDescription(),
+        user.username()
     );
     login(user);
     mainPage

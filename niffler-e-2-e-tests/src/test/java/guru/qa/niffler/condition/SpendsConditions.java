@@ -84,11 +84,13 @@ public class SpendsConditions {
       }
 
       private String formatAmount(Double amount, String currencySymbol) {
-        return new DecimalFormat("0.##").format(amount) + " " + currencySymbol;
+        DecimalFormat decimalFormat = new DecimalFormat("0.##");
+        return decimalFormat.format(amount) + " " + currencySymbol;
       }
 
       private String formatDate(Date date) {
-        return new SimpleDateFormat("MMM dd, yyyy").format(date);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy");
+        return dateFormat.format(date);
       }
 
       @Override

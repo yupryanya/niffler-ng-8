@@ -54,7 +54,7 @@ public class SpendingTest extends BaseTestWeb {
   @User()
   @Test
   void shouldSuccessfullyAddNewSpending(UserJson user) {
-    SpendJson spend = SpendJson.generateRandomSpendJsonWithUsername(user.username());
+    SpendJson spend = SpendJson.randomSpendWithUsername(user.username());
     login(user);
     mainPage
         .getHeader()
