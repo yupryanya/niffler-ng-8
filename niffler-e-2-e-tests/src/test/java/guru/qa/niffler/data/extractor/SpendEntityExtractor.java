@@ -6,6 +6,7 @@ import guru.qa.niffler.data.entity.spend.SpendEntity;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,9 +19,8 @@ public class SpendEntityExtractor implements ResultSetExtractor<SpendEntity> {
   private SpendEntityExtractor() {
   }
 
-  @Nullable
   @Override
-  public SpendEntity extractData(ResultSet rs) throws SQLException, DataAccessException {
+  public @Nullable SpendEntity extractData(@Nonnull ResultSet rs) throws SQLException, DataAccessException {
     SpendEntity result = new SpendEntity();
     UUID spendId = null;
     while (rs.next()) {

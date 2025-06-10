@@ -7,6 +7,8 @@ import guru.qa.niffler.data.entity.user.UserDataEntity;
 import guru.qa.niffler.data.mapper.UserDataEntityRowMapper;
 import guru.qa.niffler.data.repository.UserDataRepository;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,11 +19,12 @@ import java.util.UUID;
 
 import static guru.qa.niffler.data.tpl.Connections.holder;
 
+@ParametersAreNonnullByDefault
 public class UserDataRepositoryJdbc implements UserDataRepository {
   private static final Config CFG = Config.getInstance();
 
   @Override
-  public UserDataEntity create(UserDataEntity user) {
+  public @Nonnull UserDataEntity create(UserDataEntity user) {
     try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
         "INSERT INTO public.user (username, currency, firstname, surname, full_name, photo, photo_small) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -115,7 +118,7 @@ public class UserDataRepositoryJdbc implements UserDataRepository {
   }
 
   @Override
-  public UserDataEntity update(UserDataEntity user) {
+  public @Nonnull UserDataEntity update(UserDataEntity user) {
     if (user.getId() == null) {
       throw new IllegalArgumentException("User ID must not be null for update operation");
     }

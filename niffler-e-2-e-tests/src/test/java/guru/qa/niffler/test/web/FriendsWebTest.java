@@ -6,13 +6,14 @@ import org.junit.jupiter.api.Test;
 
 public class FriendsWebTest extends BaseTestWeb {
   @User(
-      username = TEST_USER_NAME,
       friends = 3
   )
   @Test
   void friendShouldBePresentInFriendsTable(UserJson user) {
     login(user);
-    friendsPage.open()
+    mainPage
+        .getHeader()
+        .toFriendsPage()
         .verifyFriendsPresent(user.testData().friends());
   }
 
@@ -20,18 +21,21 @@ public class FriendsWebTest extends BaseTestWeb {
   @Test
   void friendTableShouldBeEmptyForNewUser(UserJson user) {
     login(user);
-    friendsPage.open()
+    mainPage
+        .getHeader()
+        .toFriendsPage()
         .verifyNoFriendsPresent();
   }
 
   @User(
-      username = TEST_USER_NAME,
       incomeInvitations = 2
   )
   @Test
   void incomeInviteShouldBePresentInAllPeoplesTable(UserJson user) {
     login(user);
-    friendsPage.open()
+    mainPage
+        .getHeader()
+        .toFriendsPage()
         .verifyIncomingRequests(user.testData().incomeInvitations());
   }
 
@@ -41,7 +45,9 @@ public class FriendsWebTest extends BaseTestWeb {
   @Test
   void outcomeInviteShouldBePresentInAllPeoplesTable(UserJson user) {
     login(user);
-    allPeoplePage.open()
+    mainPage
+        .getHeader()
+        .toAllPeoplesPage()
         .verifyOutcomeRequests(user.testData().outcomeInvitations());
   }
 }

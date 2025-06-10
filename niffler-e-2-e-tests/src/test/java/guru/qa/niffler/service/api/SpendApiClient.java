@@ -9,12 +9,17 @@ import io.qameta.allure.Step;
 import retrofit2.Call;
 import retrofit2.Response;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import static org.apache.hc.core5.http.HttpStatus.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@ParametersAreNonnullByDefault
 public class SpendApiClient extends RestClient implements SpendClient {
 
   private SpendApi spendApi;
@@ -24,11 +29,11 @@ public class SpendApiClient extends RestClient implements SpendClient {
     this.spendApi = retrofit.create(SpendApi.class);
   }
 
-  private <T> T execute(Call<T> call, int expectedStatusCode) {
+  private @Nonnull <T> T execute(Call<T> call, int expectedStatusCode) {
     try {
       Response<T> response = call.execute();
       assertEquals(expectedStatusCode, response.code(), "Unexpected HTTP status code");
-      return response.body();
+      return Objects.requireNonNull(response.body());
     } catch (IOException e) {
       throw new AssertionError("Failed to execute API request", e);
     }
@@ -63,7 +68,10 @@ public class SpendApiClient extends RestClient implements SpendClient {
   }
 
   @Step("Get spends with API")
-  public List<SpendJson> getSpends(String username, String from, String to, String filterCurrency) {
+  public List<SpendJson> getSpends(String username,
+                                   @Nullable String from,
+                                   @Nullable String to,
+                                   @Nullable String filterCurrency) {
     return execute(spendApi.getSpends(username, from, to, filterCurrency), SC_OK);
   }
 

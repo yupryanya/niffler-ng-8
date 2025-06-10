@@ -6,7 +6,10 @@ import guru.qa.niffler.data.entity.auth.AuthAuthorityEntity;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.mapper.AuthUserEntityRowMapper;
 import guru.qa.niffler.data.repository.AuthUserRepository;
+import io.qameta.allure.Step;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,14 +20,16 @@ import java.util.UUID;
 
 import static guru.qa.niffler.data.tpl.Connections.holder;
 
+@ParametersAreNonnullByDefault
 public class AuthUserRepositoryJdbc implements AuthUserRepository {
   private static final Config CFG = Config.getInstance();
 
+  @Step("Create auth user with JDBC")
   @Override
-  public AuthUserEntity create(AuthUserEntity user) {
+  public @Nonnull AuthUserEntity create(AuthUserEntity user) {
     try (PreparedStatement userPs = holder(CFG.authJdbcUrl()).connection().prepareStatement(
         "INSERT INTO public.user (username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired)" +
-            "VALUES (?, ?, ?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS);
+        "VALUES (?, ?, ?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS);
          PreparedStatement authorityPs = holder(CFG.authJdbcUrl()).connection().prepareStatement(
              "INSERT INTO authority (user_id, authority) VALUES (?, ?)"
          )) {
@@ -61,8 +66,9 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
     }
   }
 
+  @Step("Update auth user with JDBC")
   @Override
-  public AuthUserEntity update(AuthUserEntity authUser) {
+  public @Nonnull AuthUserEntity update(AuthUserEntity authUser) {
     try (PreparedStatement updateUserPs = holder(CFG.authJdbcUrl()).connection().prepareStatement(
         "UPDATE public.user SET username = ?, password = ?, enabled = ?, account_non_expired = ?, " +
         "account_non_locked = ?, credentials_non_expired = ? WHERE id = ?");
@@ -96,6 +102,7 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
     }
   }
 
+  @Step("Find auth user by ID with JDBC")
   @Override
   public Optional<AuthUserEntity> findById(String id) {
     try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
@@ -127,6 +134,7 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
     }
   }
 
+  @Step("Find auth user by username with JDBC")
   @Override
   public Optional<AuthUserEntity> findByUsername(String username) {
     try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
@@ -158,6 +166,7 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
     }
   }
 
+  @Step("Remove auth user with JDBC")
   @Override
   public void remove(AuthUserEntity authUser) {
     try (PreparedStatement deleteAuthoritiesPs = holder(CFG.authJdbcUrl()).connection().prepareStatement(

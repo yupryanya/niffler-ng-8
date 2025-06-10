@@ -9,11 +9,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@ParametersAreNonnullByDefault
 public class CategoryDaoSpringJdbc implements CategoryDao {
   private static final Config CFG = Config.getInstance();
 
@@ -24,7 +27,7 @@ public class CategoryDaoSpringJdbc implements CategoryDao {
   }
 
   @Override
-  public CategoryEntity createCategory(CategoryEntity category) {
+  public @Nonnull CategoryEntity createCategory(CategoryEntity category) {
     KeyHolder kh = new GeneratedKeyHolder();
     jdbcTemplate.update(connection -> {
           PreparedStatement ps = connection.prepareStatement(
@@ -65,7 +68,7 @@ public class CategoryDaoSpringJdbc implements CategoryDao {
   }
 
   @Override
-  public List<CategoryEntity> findAllCategoriesByUserName(String userName) {
+  public @Nonnull List<CategoryEntity> findAllCategoriesByUserName(String userName) {
     return jdbcTemplate.query(
         "SELECT * FROM category WHERE userName = ?",
         CategoryEntityRowMapper.instance,
@@ -87,7 +90,7 @@ public class CategoryDaoSpringJdbc implements CategoryDao {
   }
 
   @Override
-  public CategoryEntity updateCategory(CategoryEntity categoryEntity) {
+  public @Nonnull CategoryEntity updateCategory(CategoryEntity categoryEntity) {
     jdbcTemplate.update(
         "UPDATE category SET name = ?, archived = ? WHERE id = ?",
         categoryEntity.getName(),
@@ -98,7 +101,7 @@ public class CategoryDaoSpringJdbc implements CategoryDao {
   }
 
   @Override
-  public List<CategoryEntity> findAll() {
+  public @Nonnull List<CategoryEntity> findAll() {
     return jdbcTemplate.query(
         "SELECT * FROM category",
         CategoryEntityRowMapper.instance

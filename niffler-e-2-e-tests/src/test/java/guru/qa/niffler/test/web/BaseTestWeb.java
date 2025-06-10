@@ -7,6 +7,8 @@ import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.AllPeoplePage;
 import guru.qa.niffler.page.FriendsPage;
 import guru.qa.niffler.page.LoginPage;
+import guru.qa.niffler.page.MainPage;
+import io.qameta.allure.Step;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(BrowserExtension.class)
@@ -15,12 +17,14 @@ public class BaseTestWeb {
 
   protected static final String TEST_USER_NAME = "testuser";
 
-  protected final AllPeoplePage allPeoplePage = new AllPeoplePage();
-  protected final FriendsPage friendsPage = new FriendsPage();
+  protected final MainPage mainPage = new MainPage();
 
-  protected void login(UserJson user) {
+  @Step("Login and verify that main page is opened}")
+  protected MainPage login(UserJson user) {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
-        .doSuccessLogin(user.username(), user.testData().password())
+        .doLogin(user.username(), user.testData().password());
+    mainPage
         .verifyMainPageIsOpened();
+    return mainPage;
   }
 }

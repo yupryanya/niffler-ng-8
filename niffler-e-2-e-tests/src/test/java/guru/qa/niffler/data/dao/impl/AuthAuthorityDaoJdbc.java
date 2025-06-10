@@ -5,6 +5,8 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.auth.AuthAuthorityDao;
 import guru.qa.niffler.data.entity.auth.AuthAuthorityEntity;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ import java.util.UUID;
 
 import static guru.qa.niffler.data.tpl.Connections.holder;
 
+@ParametersAreNonnullByDefault
 public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
   private static final Config CFG = Config.getInstance();
 
@@ -43,7 +46,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
   }
 
   @Override
-  public List<AuthAuthorityEntity> findAll() {
+  public @Nonnull List<AuthAuthorityEntity> findAll() {
     try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
         "SELECT * FROM authority")) {
       ps.execute();

@@ -1,6 +1,7 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.SelenideElement;
+import io.qameta.allure.Step;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
@@ -11,11 +12,13 @@ public class SignUpSuccessPage {
 
     public static final String SUCCESSFULLY_REGISTERED = "Congratulations! You've registered!";
 
+    @Step("Click on Login button")
     public LoginPage clickLoginButton() {
         LoginButton.click();
         return new LoginPage();
     }
 
+    @Step("Verify success sign up message")
     public SignUpPage verifySuccessSignUpMessage() {
         successMessage.shouldHave(text(SUCCESSFULLY_REGISTERED));
         return new SignUpPage();

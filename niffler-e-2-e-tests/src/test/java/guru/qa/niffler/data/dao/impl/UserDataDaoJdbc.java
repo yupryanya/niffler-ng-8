@@ -5,6 +5,8 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.user.UserDataDao;
 import guru.qa.niffler.data.entity.user.UserDataEntity;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -14,11 +16,12 @@ import java.util.UUID;
 
 import static guru.qa.niffler.data.tpl.Connections.holder;
 
+@ParametersAreNonnullByDefault
 public class UserDataDaoJdbc implements UserDataDao {
   private static final Config CFG = Config.getInstance();
 
   @Override
-  public UserDataEntity createUser(UserDataEntity user) {
+  public @Nonnull UserDataEntity createUser(UserDataEntity user) {
     try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
         "INSERT INTO public.user (username, currency, firstname, surname, full_name, photo, photo_small) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -113,7 +116,7 @@ public class UserDataDaoJdbc implements UserDataDao {
   }
 
   @Override
-  public List<UserDataEntity> findAll() {
+  public @Nonnull List<UserDataEntity> findAll() {
     try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
         "SELECT id, username, currency, firstname, surname, full_name, photo, photo_small FROM user WHERE id = ?")) {
       ps.execute();

@@ -7,6 +7,8 @@ import guru.qa.niffler.data.entity.user.UserDataEntity;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -21,7 +23,7 @@ public class UserDataEntityExtractor implements ResultSetExtractor<UserDataEntit
   }
 
   @Override
-  public UserDataEntity extractData(ResultSet rs) throws SQLException, DataAccessException {
+  public @Nullable UserDataEntity extractData(@Nonnull ResultSet rs) throws SQLException, DataAccessException {
     Map<UUID, UserDataEntity> users = new ConcurrentHashMap<>();
     UUID userId = null;
 
@@ -67,7 +69,7 @@ public class UserDataEntityExtractor implements ResultSetExtractor<UserDataEntit
     return userId != null ? users.get(userId) : null;
   }
 
-  private UserDataEntity createUserReference(UUID id) {
+  private @Nonnull UserDataEntity createUserReference(@Nonnull UUID id) {
     UserDataEntity user = new UserDataEntity();
     user.setId(id);
     return user;

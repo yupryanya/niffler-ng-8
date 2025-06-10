@@ -8,16 +8,19 @@ import guru.qa.niffler.data.repository.UserDataRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 import java.util.UUID;
 
+@ParametersAreNonnullByDefault
 public class UserDataRepositoryHibernate implements UserDataRepository {
   private static final Config CFG = Config.getInstance();
 
   private final EntityManager entityManager = EntityManagers.em(CFG.userdataJdbcUrl());
 
   @Override
-  public UserDataEntity create(UserDataEntity user) {
+  public @Nonnull UserDataEntity create(UserDataEntity user) {
     entityManager.joinTransaction();
     entityManager.persist(user);
     return user;
@@ -31,7 +34,7 @@ public class UserDataRepositoryHibernate implements UserDataRepository {
   }
 
   @Override
-  public UserDataEntity update(UserDataEntity user) {
+  public @Nonnull UserDataEntity update(UserDataEntity user) {
     entityManager.joinTransaction();
     entityManager.merge(user);
     return user;

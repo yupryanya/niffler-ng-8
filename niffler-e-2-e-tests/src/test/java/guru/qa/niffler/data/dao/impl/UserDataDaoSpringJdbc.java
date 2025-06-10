@@ -9,26 +9,30 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@ParametersAreNonnullByDefault
 public class UserDataDaoSpringJdbc implements UserDataDao {
   private static final Config CFG = Config.getInstance();
 
   private final JdbcTemplate jdbcTemplate;
 
   public UserDataDaoSpringJdbc() {
-    this.jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));  }
+    this.jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
+  }
 
   @Override
-  public UserDataEntity createUser(UserDataEntity user) {
+  public @Nonnull UserDataEntity createUser(UserDataEntity user) {
     KeyHolder kh = new GeneratedKeyHolder();
     jdbcTemplate.update(connection -> {
           PreparedStatement ps = connection.prepareStatement(
               "INSERT INTO public.user (username, currency, firstname, surname, photo, photo_small, full_name)" +
-                  "VALUES (?, ?, ?, ?, ?, ?, ?)",
+              "VALUES (?, ?, ?, ?, ?, ?, ?)",
               PreparedStatement.RETURN_GENERATED_KEYS
           );
           ps.setString(1, user.getUsername());
@@ -60,16 +64,25 @@ public class UserDataDaoSpringJdbc implements UserDataDao {
 
   @Override
   public Optional<UserDataEntity> findUserByUsername(String username) {
-    return Optional.empty();
+    return Optional.ofNullable(
+        jdbcTemplate.queryForObject(
+            "SELECT * FROM public.user WHERE username = ?",
+            UserDataEntityRowMapper.instance,
+            username
+        )
+    );
   }
 
   @Override
   public void deleteUser(UserDataEntity user) {
-
+    jdbcTemplate.update(
+        "DELETE FROM public.user WHERE id = ?",
+        user.getId()
+    );
   }
 
   @Override
-  public List<UserDataEntity> findAll() {
+  public @Nonnull List<UserDataEntity> findAll() {
     return jdbcTemplate.query(
         "SELECT * FROM public.user",
         UserDataEntityRowMapper.instance

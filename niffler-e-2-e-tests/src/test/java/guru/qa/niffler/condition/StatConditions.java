@@ -8,13 +8,16 @@ import guru.qa.niffler.model.statistics.Bubble;
 import org.apache.commons.lang.ArrayUtils;
 import org.openqa.selenium.WebElement;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Arrays;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
+@ParametersAreNonnullByDefault
 public class StatConditions {
-  public static WebElementsCondition statBubblesExactOrder(Bubble... expectedBubbles) {
+  public static @Nonnull WebElementsCondition statBubblesExactOrder(Bubble... expectedBubbles) {
     if (ArrayUtils.isEmpty(expectedBubbles)) {
       throw new IllegalArgumentException("Expected bubbles cannot be empty");
     }

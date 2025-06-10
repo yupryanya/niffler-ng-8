@@ -14,6 +14,7 @@ import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.UserClient;
 import io.qameta.allure.Step;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,6 +23,7 @@ import static guru.qa.niffler.data.entity.user.UserDataEntity.fromEntity;
 import static guru.qa.niffler.model.UserJson.generateRandomUserJson;
 import static guru.qa.niffler.model.UserJson.generateUserJson;
 
+@ParametersAreNonnullByDefault
 public class UserDbClient implements UserClient {
   private static final Config CFG = Config.getInstance();
 

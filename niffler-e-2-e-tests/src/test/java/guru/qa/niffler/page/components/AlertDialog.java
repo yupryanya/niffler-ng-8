@@ -6,9 +6,13 @@ import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
 
 public class AlertDialog {
-  private final SelenideElement dialog = $("div[role='dialog']");
+  private final SelenideElement self = $("div[role='dialog']");
 
   public SelenideElement getDeleteButton() {
-    return dialog.$$("button").findBy(text("Delete"));
+    return self.$$("button").findBy(text("Delete"));
+  }
+
+  public SelenideElement getDeclineButton() {
+    return self.$$("button").findBy(text("Decline"));
   }
 }

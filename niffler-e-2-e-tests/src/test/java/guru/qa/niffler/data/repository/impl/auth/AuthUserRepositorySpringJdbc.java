@@ -5,17 +5,21 @@ import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.extractor.AuthUserEntityExtractor;
 import guru.qa.niffler.data.repository.AuthUserRepository;
 import guru.qa.niffler.data.tpl.DataSources;
+import io.qameta.allure.Step;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+@ParametersAreNonnullByDefault
 public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
   private static final Config CFG = Config.getInstance();
 
@@ -25,14 +29,15 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
     this.jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
   }
 
+  @Step("Create auth user with Spring JDBC")
   @Override
-  public AuthUserEntity create(AuthUserEntity authUser) {
+  public @Nonnull AuthUserEntity create(AuthUserEntity authUser) {
     KeyHolder keyHolder = new GeneratedKeyHolder();
 
     jdbcTemplate.update(connection -> {
       PreparedStatement ps = connection.prepareStatement(
           "INSERT INTO public.user (username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired)" +
-              "VALUES (?, ?, ?, ?, ?, ?)",
+          "VALUES (?, ?, ?, ?, ?, ?)",
           PreparedStatement.RETURN_GENERATED_KEYS
       );
       ps.setString(1, authUser.getUsername());
@@ -70,11 +75,50 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
     return authUser;
   }
 
+  @Step("Update auth user with Spring JDBC")
   @Override
-  public AuthUserEntity update(AuthUserEntity authUser) {
-    return null;
+  public @Nonnull AuthUserEntity update(AuthUserEntity authUser) {
+    jdbcTemplate.update(
+        """
+            UPDATE public.user 
+            SET username = ?, password = ?, enabled = ?, account_non_expired = ?, 
+                account_non_locked = ?, credentials_non_expired = ? 
+            WHERE id = ?
+            """,
+        authUser.getUsername(),
+        authUser.getPassword(),
+        authUser.getEnabled(),
+        authUser.getAccountNonExpired(),
+        authUser.getAccountNonLocked(),
+        authUser.getCredentialsNonExpired(),
+        authUser.getId()
+    );
+
+    jdbcTemplate.update(
+        "DELETE FROM authority WHERE user_id = ?",
+        authUser.getId()
+    );
+
+    jdbcTemplate.batchUpdate(
+        "INSERT INTO authority (user_id, authority) VALUES (?, ?)",
+        new BatchPreparedStatementSetter() {
+          @Override
+          public void setValues(PreparedStatement ps, int i) throws SQLException {
+            ps.setObject(1, authUser.getId());
+            ps.setString(2, authUser.getAuthorities().get(i).getAuthority().name());
+          }
+
+          @Override
+          public int getBatchSize() {
+            return authUser.getAuthorities().size();
+          }
+        }
+    );
+
+    return authUser;
   }
 
+  @Step("Find auth user by ID with Spring JDBC")
   @Override
   public Optional<AuthUserEntity> findById(String id) {
     return Optional.ofNullable(
@@ -91,6 +135,7 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
     );
   }
 
+  @Step("Find auth user by username with Spring JDBC")
   @Override
   public Optional<AuthUserEntity> findByUsername(String username) {
     return Optional.ofNullable(
@@ -107,6 +152,7 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
     );
   }
 
+  @Step("Remove auth user with Spring JDBC")
   @Override
   public void remove(AuthUserEntity authUser) {
     jdbcTemplate.update(

@@ -14,11 +14,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.Optional;
 import java.util.UUID;
 
+@ParametersAreNonnullByDefault
 public class SpendRepositorySpringJdbc implements SpendRepository {
   private static final Config CFG = Config.getInstance();
 
@@ -32,7 +35,7 @@ public class SpendRepositorySpringJdbc implements SpendRepository {
   }
 
   @Override
-  public SpendEntity createSpend(SpendEntity spend) {
+  public @Nonnull SpendEntity createSpend(SpendEntity spend) {
     UUID categoryId = spend.getCategory().getId();
 
     if (categoryId == null || categoryDao.findCategoryById(categoryId).isEmpty()) {
@@ -42,7 +45,7 @@ public class SpendRepositorySpringJdbc implements SpendRepository {
   }
 
   @Override
-  public SpendEntity updateSpend(SpendEntity spend) {
+  public @Nonnull SpendEntity updateSpend(SpendEntity spend) {
     KeyHolder kh = new GeneratedKeyHolder();
     jdbcTemplate.update(con -> {
       PreparedStatement ps = con.prepareStatement(
@@ -107,12 +110,12 @@ public class SpendRepositorySpringJdbc implements SpendRepository {
   }
 
   @Override
-  public CategoryEntity createCategory(CategoryEntity category) {
+  public @Nonnull CategoryEntity createCategory(CategoryEntity category) {
     return categoryDao.createCategory(category);
   }
 
   @Override
-  public CategoryEntity updateCategory(CategoryEntity category) {
+  public @Nonnull CategoryEntity updateCategory(CategoryEntity category) {
     return categoryDao.updateCategory(category);
   }
 
