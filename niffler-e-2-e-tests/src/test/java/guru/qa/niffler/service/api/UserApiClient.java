@@ -1,11 +1,14 @@
 package guru.qa.niffler.service.api;
 
+import guru.qa.niffler.api.AuthApi;
 import guru.qa.niffler.api.UserApi;
 import guru.qa.niffler.api.core.RestClient;
+import guru.qa.niffler.api.core.ThreadSafeCookieStore;
+import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.UserClient;
-import guru.qa.niffler.service.db.UserDbClient;
 import io.qameta.allure.Step;
+import org.apache.commons.lang3.time.StopWatch;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -14,19 +17,24 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
-import static guru.qa.niffler.model.UserJson.generateUserJson;
+import static com.codeborne.selenide.Selenide.sleep;
+import static guru.qa.niffler.utils.RandomDataUtils.newValidPassword;
+import static guru.qa.niffler.utils.RandomDataUtils.nonExistentUserName;
 import static org.apache.hc.core5.http.HttpStatus.SC_OK;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ParametersAreNonnullByDefault
-public class UserApiClient extends RestClient implements UserClient {
+public class UserApiClient implements UserClient {
+  protected static final Config CFG = Config.getInstance();
 
   private final UserApi userDataApi;
+  private final AuthApi authApi;
 
   public UserApiClient() {
-    super(CFG.userdataUrl());
-    this.userDataApi = retrofit.create(UserApi.class);
+    userDataApi = RestClient.RestClientFactory.retrofit(CFG.userdataUrl()).create(UserApi.class);
+    authApi = RestClient.RestClientFactory.retrofit(CFG.authUrl()).create(AuthApi.class);
   }
 
   private @Nonnull <T> T execute(Call<T> call, int expectedStatusCode) {
@@ -39,19 +47,31 @@ public class UserApiClient extends RestClient implements UserClient {
     }
   }
 
-  //TODO: workaround - to run tests with API client
-  // implement with API after 7.2 lesson
   @Override
   @Step("Create user with API")
-  public UserJson createUser(UserJson user) {
-    UserDbClient userDbClient = new UserDbClient();
-    return userDbClient.createUser(user);
-  }
+  public @Nonnull UserJson createUser(String username, String password) {
+    try {
+      authApi.requestRegisterForm().execute();
+      authApi.register(
+              username,
+              password,
+              password,
+              ThreadSafeCookieStore.INSTANCE.getCookieValue("XSRF-TOKEN"))
+          .execute();
 
-  @Override
-  @Step("Create user with API")
-  public UserJson createUser(String username, String password) {
-    return createUser(generateUserJson(username, password));
+      StopWatch sw = StopWatch.createStarted();
+      while (sw.getTime(TimeUnit.SECONDS) < 5) {
+        Response<UserJson> response = userDataApi.getUser(username).execute();
+        UserJson userJson = response.body();
+        if (userJson != null && userJson.id() != null) {
+          return userJson.withEmptyTestData();
+        }
+        sleep(100);
+      }
+      throw new AssertionError("User creation timed out");
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to create user", e);
+    }
   }
 
   @Override
@@ -61,7 +81,7 @@ public class UserApiClient extends RestClient implements UserClient {
       throw new IllegalArgumentException("Count must be greater than 0");
     }
     for (int i = 0; i < count; i++) {
-      UserJson randomUser = createUser(UserJson.generateRandomUserJson());
+      UserJson randomUser = createUser(nonExistentUserName(), newValidPassword());
       UserJson response = execute(userDataApi
           .sendInvitation(user.username(), randomUser.username()), SC_OK);
       execute(userDataApi
@@ -78,7 +98,7 @@ public class UserApiClient extends RestClient implements UserClient {
       throw new IllegalArgumentException("Count must be greater than 0");
     }
     for (int i = 0; i < count; i++) {
-      UserJson addressee = createUser(UserJson.generateRandomUserJson());
+      UserJson addressee = createUser(nonExistentUserName(), newValidPassword());
       UserJson response = execute(userDataApi
           .sendInvitation(user.username(), addressee.username()), SC_OK);
 
@@ -93,7 +113,7 @@ public class UserApiClient extends RestClient implements UserClient {
       throw new IllegalArgumentException("Count must be greater than 0");
     }
     for (int i = 0; i < count; i++) {
-      UserJson requester = createUser(UserJson.generateRandomUserJson());
+      UserJson requester = createUser(nonExistentUserName(), newValidPassword());
       UserJson response = execute(userDataApi
           .sendInvitation(requester.username(), user.username()), SC_OK);
 

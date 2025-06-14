@@ -8,9 +8,6 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import static guru.qa.niffler.utils.RandomDataUtils.newValidPassword;
-import static guru.qa.niffler.utils.RandomDataUtils.nonExistentUserName;
-
 public record UserJson(
     @JsonProperty("id")
     UUID id,
@@ -29,27 +26,8 @@ public record UserJson(
     @JsonIgnore
     TestData testData
 ) {
-  public @Nonnull static UserJson generateRandomUserJson() {
-    return new UserJson(
-        null,
-        nonExistentUserName(),
-        null,
-        CurrencyValues.RUB,
-        null,
-        null,
-        null,
-        new TestData(
-            newValidPassword(),
-            null,
-            null,
-            null,
-            null,
-            null
-        )
-    );
-  }
-
-  public @Nonnull static UserJson generateUserJson(String username, String password) {
+  public @Nonnull
+  static UserJson generateUserJson(String username, String password) {
     return new UserJson(
         null,
         username,

@@ -16,7 +16,7 @@ import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
-public class FriendsPage {
+public class FriendsPage extends BasePage<FriendsPage> {
   protected static final Config CFG = Config.getInstance();
 
   private static final String FRIENDS_TAB_LABEL = "Friends";
@@ -26,8 +26,9 @@ public class FriendsPage {
   private final SelenideElement friendsTable = $("#friends");
   private final ElementsCollection friendsTableItems = $$("#friends tr");
   private final ElementsCollection incomingRequestsTableItems = $$("#requests");
+  private final SelenideElement searchFieldContainer = $("form.MuiBox-root");
 
-  private SearchField searchField = new SearchField();
+  private SearchField searchField = new SearchField(searchFieldContainer);
   private AlertDialog alertDialog = new AlertDialog();
 
   private ElementsCollection getRowByUsername(String username) {

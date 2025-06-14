@@ -3,25 +3,17 @@ package guru.qa.niffler.page.components;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 
-import static com.codeborne.selenide.Selenide.$;
-
-public class SearchField {
-  private final SelenideElement self;
-
+public class SearchField extends BaseComponent<SearchField> {
   private final String searchInput = "input[aria-label='search']";
   private final String clearButton = "#input-clear";
 
   public SearchField(SelenideElement self) {
-    this.self = self;
-  }
-
-  public SearchField() {
-    this.self = $("form.MuiBox-root");
+    super(self);
   }
 
   @Step("Enter search input: {description}")
   public SearchField enterSearchValue(String value) {
-    self.$(searchInput).setValue(value).pressEnter();;
+    self.$(searchInput).setValue(value).pressEnter();
     return this;
   }
 

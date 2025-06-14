@@ -8,11 +8,11 @@ import java.util.Date;
 
 import static com.codeborne.selenide.Selenide.$;
 
-public class EditSpendingPage {
-
+public class EditSpendingPage extends BasePage<EditSpendingPage> {
   private final SelenideElement saveButton = $("#save");
+  private final SelenideElement spendFormContainer = $("form.MuiGrid-container");
 
-  private SpendForm spendForm = new SpendForm();
+  private SpendForm spendForm = new SpendForm(spendFormContainer);
 
   @Step("Edit spending description: {description}")
   public EditSpendingPage editDescription(String description) {

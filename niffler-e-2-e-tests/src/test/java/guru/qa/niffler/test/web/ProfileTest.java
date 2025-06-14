@@ -21,6 +21,7 @@ public class ProfileTest extends BaseTestWeb {
     final CategoryJson category = user.testData().categories().getFirst();
     login(user);
     Selenide.open(ProfilePage.URL, ProfilePage.class)
+        .getCategoriesTable()
         .verifyCategoryIsDisplayed(category.name());
   }
 
@@ -38,6 +39,7 @@ public class ProfileTest extends BaseTestWeb {
     mainPage
         .getHeader()
         .toProfilePage()
+        .getCategoriesTable()
         .switchArchivedCategoriesToVisible()
         .verifyCategoryIsDisplayed(category.name());
   }

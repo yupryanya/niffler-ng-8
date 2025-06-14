@@ -9,7 +9,6 @@ import guru.qa.niffler.page.EditSpendingPage;
 import guru.qa.niffler.page.MainPage;
 import io.qameta.allure.Step;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -18,14 +17,13 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
-public class SpendsTable {
-  private final SelenideElement self = $("#spendings");
-
+public class SpendsTable extends BaseComponent<SpendsTable> {
   private final ElementsCollection tableRows = $$("#spendings tbody tr");
   private final SelenideElement periodSelect = $("#period");
   private final SelenideElement deleteSpendButton = $("#delete");
+  private final SelenideElement searchFieldContainer = $("form.MuiBox-root");
 
-  private final SearchField searchField = new SearchField();
+  private SearchField searchField = new SearchField(searchFieldContainer);
 
   private static final Map<String, Integer> COLUMN_INDEX = Map.of(
       "select", 0,
@@ -35,6 +33,10 @@ public class SpendsTable {
       "date", 4,
       "edit", 5
   );
+
+  public SpendsTable(SelenideElement self) {
+    super(self);
+  }
 
   private ElementsCollection getCellsBySpendDescription(String spendDescription) {
     return tableRows

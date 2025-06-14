@@ -7,9 +7,9 @@ import io.qameta.allure.Step;
 import static com.codeborne.selenide.Condition.attribute;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
-import static guru.qa.niffler.common.messages.ApplicationWarnings.SignupWarnings.VALIDATION_MESSAGE;
+import static guru.qa.niffler.common.messages.ApplicationMessages.SignupWarnings.VALIDATION_MESSAGE;
 
-public class SignUpPage {
+public class SignUpPage extends BasePage<SignUpPage> {
   protected static final Config CFG = Config.getInstance();
   public static final String URL = CFG.authUrl() + "register";
 

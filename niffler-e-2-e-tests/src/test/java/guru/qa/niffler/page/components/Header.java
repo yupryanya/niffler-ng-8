@@ -7,10 +7,9 @@ import io.qameta.allure.Step;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
 
-public class Header {
+public class Header extends BaseComponent<Header> {
 
   private static final String HEADER_TITLE = "Niffler";
-  private final SelenideElement self = $("#root header");
 
   private final String addSpendingLink = "a[href*='/spending']";
   private final String mainPageLink = "a[href*='/main']";
@@ -19,6 +18,14 @@ public class Header {
   private final SelenideElement profileLink = $("a[href*='/profile']");
   private final SelenideElement friendsLink = $("a[href*='/people/friends']");
   private final SelenideElement allPeopleLink = $("a[href*='/people/all']");
+
+  public Header(SelenideElement self) {
+    super(self);
+  }
+
+  public Header() {
+    super($("#root header"));
+  }
 
   @Step("Navigate to 'Add spending' page")
   public AddSpendingPage navigateToAddSpendingPage() {

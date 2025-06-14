@@ -8,11 +8,13 @@ import io.qameta.allure.Step;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
 
-public class AddSpendingPage {
+public class AddSpendingPage extends BasePage<AddSpendingPage> {
   private static final String ADD_SPENDING_LABEL = "Add new spending";
-  private final SelenideElement addButton = $("#save");
 
-  private SpendForm spendForm = new SpendForm();
+  private final SelenideElement addButton = $("#save");
+  private final SelenideElement spendFormContainer = $("form.MuiGrid-container");
+
+  private SpendForm spendForm = new SpendForm(spendFormContainer);
 
   @Step("Verify 'Add spending' page is opened")
   public AddSpendingPage verifyPageIsOpened() {
