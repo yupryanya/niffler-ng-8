@@ -11,26 +11,29 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import static com.codeborne.selenide.CollectionCondition.empty;
-import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.sleep;
 import static guru.qa.niffler.condition.StatConditions.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-public class StatisticsDiagram {
-  private final SelenideElement statisticsDoughnutChart = $("canvas[role='img']");
-  private final SelenideElement statisticsLegend = $("#legend-container");
+public class StatisticsDiagram extends BaseComponent<StatisticsDiagram> {
+  private final String statisticsDoughnutChart = "canvas[role='img']";
+  private final String statisticsLegend = "#legend-container";
+
+  public StatisticsDiagram(SelenideElement self) {
+    super(self);
+  }
 
   private BufferedImage getStatisticImage() {
     sleep(3000);
     try {
-      return ImageIO.read(statisticsDoughnutChart.screenshot());
+      return ImageIO.read(self.$(statisticsDoughnutChart).screenshot());
     } catch (IOException e) {
       throw new RuntimeException("Failed to read the image", e);
     }
   }
 
   private ElementsCollection getStatisticsLegend() {
-    return statisticsLegend.$$("li");
+    return self.$(statisticsLegend).$$("li");
   }
 
   @Step("Verify statistics diagram matches expected image")

@@ -9,7 +9,7 @@ import java.util.Date;
 
 import static com.codeborne.selenide.Selenide.$;
 
-public class SpendForm {
+public class SpendForm extends BaseComponent<SpendForm> {
   private final SelenideElement amountInput = $("#amount");
   private final SelenideElement currencySelect = $("#currency");
   private final ElementsCollection currencyOptions = $("ul[role='listbox']").$$("li");
@@ -17,8 +17,13 @@ public class SpendForm {
   private final SelenideElement dateInput = $("input[name='date']");
   private final SelenideElement descriptionInput = $("#description");
   private final SelenideElement calendarButton = $("img[alt='Calendar']");
+  private final SelenideElement calendarContainer = $("div.MuiDateCalendar-root");
+  ;
+  private final Calendar calendar = new Calendar(calendarContainer);
 
-  private final Calendar calendar = new Calendar();
+  public SpendForm(SelenideElement self) {
+    super(self);
+  }
 
   @Step("Set amount {amount}")
   public SpendForm setAmount(String amount) {

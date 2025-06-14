@@ -9,10 +9,8 @@ import java.util.Locale;
 
 import static com.codeborne.selenide.Condition.exactOwnText;
 import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Selenide.$;
 
-public class Calendar {
-  private final SelenideElement self;
+public class Calendar extends BaseComponent<Calendar> {
 
   private final String previousMonthButton = "button[title='Previous month']";
   private final String nextMonthButton = "button[title='Next month']";
@@ -21,13 +19,8 @@ public class Calendar {
   private final String monthAndYearLabel = "div.MuiPickersCalendarHeader-label";
   private final String selectYearButton = "button[aria-label='calendar view is open, switch to year view']";
 
-
   public Calendar(SelenideElement self) {
-    this.self = self;
-  }
-
-  public Calendar() {
-    this.self = $("div.MuiDateCalendar-root");
+    super(self);
   }
 
   @Step("Set date with calendar")

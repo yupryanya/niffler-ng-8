@@ -9,7 +9,7 @@ import static com.codeborne.selenide.Selenide.$;
 import static guru.qa.niffler.common.messages.ApplicationWarnings.LoginWarnings.BAD_CREDENTIALS;
 import static guru.qa.niffler.common.messages.ApplicationWarnings.SignupWarnings.VALIDATION_MESSAGE;
 
-public class LoginPage {
+public class LoginPage extends BasePage<LoginPage> {
     private final String LOGIN_TITLE_TEXT = "Log in";
 
     private final SelenideElement loginTitle = $("h1.header");

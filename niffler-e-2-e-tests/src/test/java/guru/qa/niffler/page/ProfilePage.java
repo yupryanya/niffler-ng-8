@@ -1,49 +1,36 @@
 package guru.qa.niffler.page;
 
-import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.page.components.CategoriesTable;
 import guru.qa.niffler.utils.ScreenDiffResult;
 import io.qameta.allure.Step;
+import lombok.Getter;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Condition.disabled;
+import static com.codeborne.selenide.Condition.value;
 import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-public class ProfilePage {
+public class ProfilePage extends BasePage<ProfilePage> {
   protected static final Config CFG = Config.getInstance();
   public static final String URL = CFG.frontUrl() + "profile";
 
-  private final SelenideElement showArchivedCategoriesToggle = $("input[type='checkbox']");
-  private final ElementsCollection categories = $$("div.MuiButtonBase-root[role='button']");
   private final SelenideElement profilePicture = $("#image__input").parent().$("img");
   private final SelenideElement defaultIcon = $("svg[data-testid='PersonIcon']");
   private final SelenideElement uploadNewPictureButton = $("#image__input");
   private final SelenideElement saveChangesButton = $("button[type='submit']");
   private final SelenideElement nameInput = $("#name");
   private final SelenideElement usernameInput = $("#username");
+  private final SelenideElement categoriesTableContainer = $("#category").ancestor(".MuiGrid-container");
 
-  public SelenideElement findCategory(String name) {
-    return categories.findBy(text(name));
-  }
-
-  @Step("Verify category with name {name} is displayed")
-  public ProfilePage verifyCategoryIsDisplayed(String name) {
-    findCategory(name).should(visible);
-    return this;
-  }
-
-  @Step("Switch archived categories to visible")
-  public ProfilePage switchArchivedCategoriesToVisible() {
-    showArchivedCategoriesToggle.click();
-    return this;
-  }
+  @Getter
+  private final CategoriesTable categoriesTable = new CategoriesTable(categoriesTableContainer);
 
   @Step("Verify profile picture is displayed")
   public ProfilePage verifyProfilePictureIsDisplayed(BufferedImage expectedImage) {

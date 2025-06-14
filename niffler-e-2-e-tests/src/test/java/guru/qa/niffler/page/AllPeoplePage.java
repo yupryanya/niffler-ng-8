@@ -2,6 +2,7 @@ package guru.qa.niffler.page;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
+import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.components.SearchField;
@@ -15,14 +16,15 @@ import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
-public class AllPeoplePage {
+public class AllPeoplePage extends BasePage<AllPeoplePage> {
   protected static final Config CFG = Config.getInstance();
 
   private static final String ALL_PEOPLE_TAB_LABEL = "All people";
 
   private final ElementsCollection allPeopleTableItems = $$("#all tr");
+  private final SelenideElement searchFieldContainer = $("form.MuiBox-root");
 
-  private SearchField searchField = new SearchField();
+  private SearchField searchField = new SearchField(searchFieldContainer);
 
   private String getUrl() {
     return CFG.frontUrl() + "people/all";

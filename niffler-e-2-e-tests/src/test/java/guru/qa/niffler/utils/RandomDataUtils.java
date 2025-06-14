@@ -10,11 +10,11 @@ public class RandomDataUtils {
   private static final Faker faker = new Faker();
 
   public static String newCategoryName() {
-    return faker.commerce().department() + "-" + java.util.UUID.randomUUID();
+    return faker.commerce().department();
   }
 
   public static String newDescription() {
-    return faker.commerce().productName() + "-" + java.util.UUID.randomUUID();
+    return faker.commerce().productName();
   }
 
   public static String nonExistentUserName() {
@@ -47,5 +47,9 @@ public class RandomDataUtils {
 
   public static Date randomDate() {
     return faker.date().past(1000, DAYS, new Date());
+  }
+
+  public static String randomString(int length) {
+    return faker.lorem().characters(length);
   }
 }
