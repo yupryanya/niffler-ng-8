@@ -5,7 +5,7 @@ import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.ProfilePage;
 import org.junit.jupiter.api.Test;
 
-import static guru.qa.niffler.common.messages.ApplicationMessages.ProfileAlertMessages.*;
+import static guru.qa.niffler.common.messages.ApplicationWarnings.ProfileAlertMessages.*;
 import static guru.qa.niffler.utils.RandomDataUtils.newCategoryName;
 import static guru.qa.niffler.utils.RandomDataUtils.randomString;
 

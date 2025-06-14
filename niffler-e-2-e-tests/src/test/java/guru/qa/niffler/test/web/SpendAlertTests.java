@@ -6,7 +6,7 @@ import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserJson;
 import org.junit.jupiter.api.Test;
 
-import static guru.qa.niffler.common.messages.ApplicationMessages.SpendPageAlertMessages.*;
+import static guru.qa.niffler.common.messages.ApplicationWarnings.SpendPageAlertMessages.*;
 
 public class SpendAlertTests extends BaseTestWeb {
   @User()

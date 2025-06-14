@@ -1,6 +1,6 @@
 package guru.qa.niffler.common.messages;
 
-public class ApplicationMessages {
+public class ApplicationWarnings {
   public class SignupWarnings {
     public static final String USER_EXISTS = "Username `%s` already exists";
     public static final String INVALID_USERNAME = "Allowed username length should be from 3 to 50 characters";

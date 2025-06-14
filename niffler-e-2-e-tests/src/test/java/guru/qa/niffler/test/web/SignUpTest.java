@@ -14,7 +14,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static guru.qa.niffler.common.messages.ApplicationMessages.SignupWarnings.*;
+import static guru.qa.niffler.common.messages.ApplicationWarnings.SignupWarnings.*;
 import static guru.qa.niffler.utils.RandomDataUtils.*;
 
 public class SignUpTest extends BaseTestWeb {
