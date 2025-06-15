@@ -15,6 +15,8 @@ import retrofit2.Response;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -76,49 +78,52 @@ public class UserApiClient implements UserClient {
 
   @Override
   @Step("Create friends with API")
-  public void createFriends(UserJson user, int count) {
+  public @Nonnull List<UserJson> createFriends(UserJson user, int count) {
     if (count < 1) {
       throw new IllegalArgumentException("Count must be greater than 0");
     }
+    List<UserJson> addedFriends = new ArrayList<>();
     for (int i = 0; i < count; i++) {
       UserJson randomUser = createUser(nonExistentUserName(), newValidPassword());
-      UserJson response = execute(userDataApi
-          .sendInvitation(user.username(), randomUser.username()), SC_OK);
-      execute(userDataApi
-          .acceptInvitation(randomUser.username(), user.username()), SC_OK);
-
-      user.testData().friends().add(response);
+      execute(userDataApi.sendInvitation(user.username(), randomUser.username()), SC_OK);
+      execute(userDataApi.acceptInvitation(randomUser.username(), user.username()), SC_OK);
+      addedFriends.add(randomUser);
     }
+    user.testData().friends().addAll(addedFriends);
+    return addedFriends;
   }
 
   @Override
   @Step("Create outcome invitations with API")
-  public void createOutcomeInvitations(UserJson user, int count) {
+  public @Nonnull List<UserJson> createOutcomeInvitations(UserJson user, int count) {
     if (count < 1) {
       throw new IllegalArgumentException("Count must be greater than 0");
     }
+    List<UserJson> addedInvitations = new ArrayList<>();
     for (int i = 0; i < count; i++) {
       UserJson addressee = createUser(nonExistentUserName(), newValidPassword());
-      UserJson response = execute(userDataApi
-          .sendInvitation(user.username(), addressee.username()), SC_OK);
-
-      user.testData().outcomeInvitations().add(response);
+      execute(userDataApi.sendInvitation(user.username(), addressee.username()), SC_OK);
+      addedInvitations.add(addressee);
     }
+    user.testData().outcomeInvitations().addAll(addedInvitations);
+    return addedInvitations;
   }
+
 
   @Override
   @Step("Create income invitations with API")
-  public void createIncomeInvitations(UserJson user, int count) {
+  public List<UserJson> createIncomeInvitations(UserJson user, int count) {
     if (count < 1) {
       throw new IllegalArgumentException("Count must be greater than 0");
     }
+    List<UserJson> addedInvitations = new ArrayList<>();
     for (int i = 0; i < count; i++) {
       UserJson requester = createUser(nonExistentUserName(), newValidPassword());
-      UserJson response = execute(userDataApi
-          .sendInvitation(requester.username(), user.username()), SC_OK);
-
-      user.testData().incomeInvitations().add(requester);
+      execute(userDataApi.sendInvitation(requester.username(), user.username()), SC_OK);
+      addedInvitations.add(requester);
     }
+    user.testData().incomeInvitations().addAll(addedInvitations);
+    return addedInvitations;
   }
 
   @Override
@@ -129,5 +134,13 @@ public class UserApiClient implements UserClient {
     }
     UserJson userData = execute(userDataApi.getUser(username), SC_OK);
     return Optional.of(userData.withEmptyTestData());
+  }
+
+  @Step("Find all users with API")
+  public List<UserJson> allUsers(String username, String searchQuery) {
+    if (username == null || username.isEmpty()) {
+      throw new IllegalArgumentException("Username cannot be null or empty");
+    }
+    return execute(userDataApi.allUsers(username, searchQuery), SC_OK);
   }
 }

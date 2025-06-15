@@ -14,10 +14,9 @@ import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.UserClient;
 import io.qameta.allure.Step;
 
+import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static guru.qa.niffler.data.entity.user.UserDataEntity.fromEntity;
 import static guru.qa.niffler.model.UserJson.generateUserJson;
@@ -40,52 +39,55 @@ public class UserDbClient implements UserClient {
 
   @Override
   @Step("Create friends with SQL")
-  public void createFriends(UserJson user, int count) {
+  public @Nonnull List<UserJson> createFriends(UserJson user, int count) {
     if (count < 1) {
       throw new IllegalArgumentException("Count must be greater than 0");
     }
-    xaTransactionTemplate.execute(() -> {
+    return xaTransactionTemplate.execute(() -> {
       UserDataEntity userEntity = findUserById(user.id());
+      List<UserJson> addedFriends = new ArrayList<>();
       for (int i = 0; i < count; i++) {
         UserDataEntity friendEntity = UserDataEntity.fromJson(createUser(nonExistentUserName(), newValidPassword()));
         userData.addFriendship(userEntity, friendEntity);
-        user.testData().friends().add(fromEntity(friendEntity));
+        addedFriends.add(fromEntity(friendEntity));
       }
-      return null;
+      return addedFriends;
     });
   }
 
   @Override
   @Step("Create outcome invitations with SQL")
-  public void createOutcomeInvitations(UserJson user, int count) {
+  public @Nonnull List<UserJson> createOutcomeInvitations(UserJson user, int count) {
     if (count < 1) {
       throw new IllegalArgumentException("Count must be greater than 0");
     }
-    xaTransactionTemplate.execute(() -> {
+    return xaTransactionTemplate.execute(() -> {
       UserDataEntity userEntity = findUserById(user.id());
+      List<UserJson> addedInvitations = new ArrayList<>();
       for (int i = 0; i < count; i++) {
         UserDataEntity addresseeEntity = UserDataEntity.fromJson(createUser(nonExistentUserName(), newValidPassword()));
         userData.addInvitation(userEntity, addresseeEntity);
-        user.testData().outcomeInvitations().add(fromEntity(addresseeEntity));
+        addedInvitations.add(fromEntity(addresseeEntity));
       }
-      return user;
+      return addedInvitations;
     });
   }
 
   @Override
   @Step("Create income invitations with SQL")
-  public void createIncomeInvitations(UserJson user, int count) {
+  public @Nonnull List<UserJson> createIncomeInvitations(UserJson user, int count) {
     if (count < 1) {
       throw new IllegalArgumentException("Count must be greater than 0");
     }
-    xaTransactionTemplate.execute(() -> {
+    return xaTransactionTemplate.execute(() -> {
       UserDataEntity userEntity = findUserById(user.id());
+      List<UserJson> createdInvitations = new ArrayList<>();
       for (int i = 0; i < count; i++) {
         UserDataEntity requesterEntity = UserDataEntity.fromJson(createUser(nonExistentUserName(), newValidPassword()));
         userData.addInvitation(requesterEntity, userEntity);
-        user.testData().incomeInvitations().add(fromEntity(requesterEntity));
+        createdInvitations.add(fromEntity(requesterEntity));
       }
-      return null;
+      return createdInvitations;
     });
   }
 
