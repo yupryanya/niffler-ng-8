@@ -18,7 +18,7 @@ public class SpendForm extends BaseComponent<SpendForm> {
   private final SelenideElement descriptionInput = $("#description");
   private final SelenideElement calendarButton = $("img[alt='Calendar']");
   private final SelenideElement calendarContainer = $("div.MuiDateCalendar-root");
-  ;
+
   private final Calendar calendar = new Calendar(calendarContainer);
 
   public SpendForm(SelenideElement self) {

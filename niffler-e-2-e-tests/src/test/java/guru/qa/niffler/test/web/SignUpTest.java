@@ -27,7 +27,7 @@ public class SignUpTest extends BaseTestWeb {
                 .verifySuccessSignUpMessage();
     }
 
-    @User(username = TEST_USER_NAME)
+    @User()
     @Test
     void shouldNotRegisterUserWithExistingUsername(UserJson user) {
         Selenide.open(CFG.frontUrl(), LoginPage.class)

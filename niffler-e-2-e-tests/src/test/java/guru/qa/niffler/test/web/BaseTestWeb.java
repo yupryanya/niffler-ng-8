@@ -13,8 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 public class BaseTestWeb {
   protected static final Config CFG = Config.getInstance();
 
-  protected static final String TEST_USER_NAME = "testuser";
-
   protected final MainPage mainPage = new MainPage();
 
   @Step("Login and verify that main page is opened}")
