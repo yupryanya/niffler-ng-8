@@ -25,8 +25,6 @@ public interface AuthApi {
       @Query(value = "redirect_uri", encoded = true) String redirectUri,
       @Query("code_challenge") String codeChallenge,
       @Query("code_challenge_method") String codeChallengeMethod
-//      ,
-//      @Query(value = "continue", encoded = true) String continueFlag
   );
 
   @POST("login")
