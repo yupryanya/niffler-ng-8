@@ -1,10 +1,7 @@
 package guru.qa.niffler.test.web;
 
 import guru.qa.niffler.common.values.Color;
-import guru.qa.niffler.jupiter.annotation.Category;
-import guru.qa.niffler.jupiter.annotation.ScreenshotTest;
-import guru.qa.niffler.jupiter.annotation.Spend;
-import guru.qa.niffler.jupiter.annotation.User;
+import guru.qa.niffler.jupiter.annotation.*;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserJson;
@@ -26,10 +23,10 @@ public class StatisticsTest extends BaseTestWeb {
           @Spend(category = "Clothes", description = "T-shirt", amount = 1699.00)
       }
   )
+  @ApiLogin
   @Test
   @ScreenshotTest(value = "img/expected-stat.png")
   void multipleCategoriesShouldBeDisplayedInStatisticsChart(UserJson user, BufferedImage expectedImage) throws IOException {
-    login(user);
     mainPage
         .getStatisticsDiagram()
         .verifyStatisticsImageMatchesExpected(expectedImage)
@@ -39,11 +36,11 @@ public class StatisticsTest extends BaseTestWeb {
         );
   }
 
-  @User()
+  @User
+  @ApiLogin
   @Test
   @ScreenshotTest(value = "img/empty-stat.png")
   void statisticsChartShouldBeEmptyForNewUser(UserJson user, BufferedImage expectedImage) throws IOException {
-    login(user);
     mainPage
         .getStatisticsDiagram()
         .verifyStatisticsImageMatchesExpected(expectedImage)
@@ -56,10 +53,10 @@ public class StatisticsTest extends BaseTestWeb {
           @Spend(category = "Grocery", description = "Milk", amount = 99.10)
       }
   )
+  @ApiLogin
   @Test
   @ScreenshotTest(value = "img/edited-amount-stat.png")
   void statisticsChartShouldChangeWhenEditSpendAmount(UserJson user, BufferedImage expectedImage) throws IOException {
-    login(user);
     mainPage
         .getSpendsTable()
         .editSpend(user.testData().spends().getFirst().description())
@@ -77,6 +74,7 @@ public class StatisticsTest extends BaseTestWeb {
           @Spend(category = "Grocery", description = "Bread", amount = 100.00)
       }
   )
+  @ApiLogin
   @Test
   @ScreenshotTest(value = "img/add-spend-stat.png")
   void statisticsChartShouldChangeWhenAddSpend(UserJson user, BufferedImage expectedImage) throws IOException {
@@ -89,7 +87,6 @@ public class StatisticsTest extends BaseTestWeb {
         newDescription(),
         user.username()
     );
-    login(user);
     mainPage
         .getHeader()
         .navigateToAddSpendingPage()
@@ -109,10 +106,10 @@ public class StatisticsTest extends BaseTestWeb {
           @Spend(category = "Kids", description = "Toys", amount = 1109.00)
       }
   )
+  @ApiLogin
   @Test
   @ScreenshotTest(value = "img/delete-spend-stat.png")
   void statisticsChartShouldChangeWhenDeleteSpend(UserJson user, BufferedImage expectedImage) throws IOException {
-    login(user);
     mainPage
         .getSpendsTable()
         .deleteSpend("Bread")
@@ -132,10 +129,10 @@ public class StatisticsTest extends BaseTestWeb {
           @Category(name = "DIY", archived = true)
       }
   )
+  @ApiLogin
   @Test
   @ScreenshotTest(value = "img/archive-spend-stat.png")
   void statisticsChartShouldDisplayArchivedSpends(UserJson user, BufferedImage expectedImage) throws IOException {
-    login(user);
     mainPage
         .getStatisticsDiagram()
         .verifyStatisticsImageMatchesExpected(expectedImage)

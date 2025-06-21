@@ -1,6 +1,7 @@
 package guru.qa.niffler.test.web;
 
 import guru.qa.niffler.common.values.CurrencyValues;
+import guru.qa.niffler.jupiter.annotation.ApiLogin;
 import guru.qa.niffler.jupiter.annotation.Spend;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.SpendJson;
@@ -22,10 +23,10 @@ public class SpendingTest extends BaseTestWeb {
           )
       }
   )
+  @ApiLogin
   @Test
   void shouldUpdateSpendingDescriptionWhenEditedInTable(UserJson user) {
     final String newDescription = "Обучение Niffler NG2";
-    login(user);
     mainPage.getSpendsTable()
         .editSpend(user.testData().spends().getFirst().description())
         .editDescription(newDescription);
@@ -39,23 +40,22 @@ public class SpendingTest extends BaseTestWeb {
   @User(
       spends = {
           @Spend(category = "Grocery", description = "Milk", amount = 90.10),
-          @Spend(category = "Grocery", description = "Bread", amount = 89.99),
           @Spend(category = "Clothes", description = "Pants", amount = 2089.99)
       }
   )
+  @ApiLogin
   @Test
   void shouldDisplayAllSpendsInTable(UserJson user) {
-    login(user);
     mainPage
         .getSpendsTable()
         .verifySpendTableMatches(user.testData().spends());
   }
 
-  @User()
+  @User
+  @ApiLogin
   @Test
   void shouldSuccessfullyAddNewSpending(UserJson user) {
     SpendJson spend = SpendJson.randomSpendWithUsername(user.username());
-    login(user);
     mainPage
         .getHeader()
         .navigateToAddSpendingPage()
@@ -70,12 +70,11 @@ public class SpendingTest extends BaseTestWeb {
           @Spend(category = "Grocery", description = "Milk", amount = 90.10)
       }
   )
+  @ApiLogin
   @Test
   void shouldUpdateSpendingDateWhenEditedWithCalendar(UserJson user) {
     SpendJson spend = user.testData().spends().getFirst();
     Date newDate = randomDate();
-
-    login(user);
     mainPage
         .getSpendsTable()
         .editSpend(spend.description())

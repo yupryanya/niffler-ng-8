@@ -1,5 +1,6 @@
 package guru.qa.niffler.test.web;
 
+import guru.qa.niffler.jupiter.annotation.ApiLogin;
 import guru.qa.niffler.jupiter.annotation.Spend;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.SpendJson;
@@ -9,12 +10,11 @@ import org.junit.jupiter.api.Test;
 import static guru.qa.niffler.common.messages.ApplicationWarnings.SpendPageAlertMessages.*;
 
 public class SpendAlertTests extends BaseTestWeb {
-  @User()
+  @User
+  @ApiLogin
   @Test
   void shouldDisplayAlertWhenSpendingIsAdded(UserJson user) {
     SpendJson spend = SpendJson.randomSpendWithUsername(user.username());
-
-    login(user);
     mainPage
         .getHeader()
         .navigateToAddSpendingPage()
@@ -28,9 +28,9 @@ public class SpendAlertTests extends BaseTestWeb {
           @Spend(category = "Grocery", description = "Bread", amount = 100.56)
       }
   )
+  @ApiLogin
   @Test
   void shouldDisplayAlertWhenSpendingDeleted(UserJson user) {
-    login(user);
     mainPage
         .getSpendsTable()
         .deleteSpend(user.testData().spends().getFirst().description())
@@ -42,9 +42,9 @@ public class SpendAlertTests extends BaseTestWeb {
           @Spend(category = "Grocery", description = "Bread", amount = 100.56)
       }
   )
+  @ApiLogin
   @Test
   void shouldDisplayAlertWhenSpendingUpdated(UserJson user) {
-    login(user);
     mainPage
         .getSpendsTable()
         .editSpend(user.testData().spends().getFirst().description())

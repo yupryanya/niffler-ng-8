@@ -1,6 +1,6 @@
 package guru.qa.niffler.api;
 
-import guru.qa.niffler.model.oauth.TokenResponse;
+import com.fasterxml.jackson.databind.JsonNode;
 import retrofit2.Call;
 import retrofit2.http.*;
 
@@ -37,7 +37,7 @@ public interface AuthApi {
 
   @POST("oauth2/token")
   @FormUrlEncoded
-  Call<TokenResponse> token(
+  Call<JsonNode> token(
       @Field("code") String code,
       @Field(value = "redirect_uri", encoded = true) String redirectUri,
       @Field("code_verifier") String codeVerifier,

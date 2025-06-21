@@ -27,7 +27,7 @@ public class CategoryExtension implements
           if (user.categories() == null || user.categories().length == 0) {
             return;
           }
-          UserJson contextUser = UserExtension.contextUser();
+          UserJson contextUser = UserExtension.getContextUser();
           final String username = contextUser != null ? contextUser.username() : user.username();
 
           final List<CategoryJson> categories = new ArrayList<>();
