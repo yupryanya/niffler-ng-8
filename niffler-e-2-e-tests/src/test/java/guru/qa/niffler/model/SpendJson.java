@@ -29,7 +29,7 @@ public record SpendJson(
     return new SpendJson(
         null,
         new Date(),
-        CategoryJson.generateRandomCategoryJsonWithUsername(username),
+        CategoryJson.randomCategory(username),
         CurrencyValues.RUB,
         randomAmount(),
         newDescription(),

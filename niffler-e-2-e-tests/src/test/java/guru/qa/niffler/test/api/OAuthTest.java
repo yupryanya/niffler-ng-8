@@ -1,44 +1,43 @@
 package guru.qa.niffler.test.api;
 
-import guru.qa.niffler.api.AuthApi;
-import guru.qa.niffler.api.core.RestClient;
-import guru.qa.niffler.api.core.ThreadSafeCookieStore;
-import guru.qa.niffler.config.Config;
-import guru.qa.niffler.jupiter.annotation.User;
+import guru.qa.niffler.jupiter.annotation.*;
 import guru.qa.niffler.model.UserJson;
-import guru.qa.niffler.utils.OAuthUtils;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class OAuthTest {
-  private final static Config CFG = Config.getInstance();
-
-  private final AuthApi authApi = new RestClient(CFG.authUrl(), true).getRetrofit().create(AuthApi.class);
-
-  private final String redirectUrl = CFG.frontUrl() + "authorized";
-  private final String clientId = "client";
-  private final String codeVerifier = OAuthUtils.generateCodeVerifier();
-  private final String codeChallenge = OAuthUtils.generateCodeChallenge(codeVerifier);
-
-  @User
+  @User(
+      friends = 3,
+      incomeInvitations = 2,
+      outcomeInvitations = 1,
+      categories = {
+          @Category(name = "Grocery"),
+          @Category(name = "Entertainment")
+      },
+      spends = {
+          @Spend(category = "Grocery", description = "Milk", amount = 90.10)
+      }
+  )
+  @ApiLogin
   @Test
-  void verifyTokenIsReturned(UserJson user) throws IOException {
-    authApi
-        .preRequest("code", clientId, "openid", redirectUrl, codeChallenge, "S256")
-        .execute();
+  void verifyTokenIsReturnedForNewUser(@Token String token, UserJson user) throws IOException {
+    assertNotNull(token);
+    assertNotNull(user.username());
+    assertFalse(user.testData().categories().isEmpty());
+    assertFalse(user.testData().spends().isEmpty());
+    assertFalse(user.testData().friends().isEmpty());
+    assertFalse(user.testData().incomeInvitations().isEmpty());
+    assertFalse(user.testData().outcomeInvitations().isEmpty());
+  }
 
-    var response = authApi
-        .login(ThreadSafeCookieStore.INSTANCE.getCookieValue("XSRF-TOKEN"), user.username(), user.testData().password())
-        .execute();
-    String code = response.raw().request().url().queryParameter("code");
-
-    var token = authApi
-        .token(code, redirectUrl, codeVerifier, "authorization_code", clientId)
-        .execute();
-
-    assertNotNull(token.body().idToken());
+  @ApiLogin(username = "admin", password = "testpassword")
+  @Test
+  void verifyTokenIsReturnedIfNoUserGenerated(@Token String token, UserJson user) throws IOException {
+    assertNotNull(token);
+    assertNotNull(user.username());
   }
 }

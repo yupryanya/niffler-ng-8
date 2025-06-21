@@ -111,7 +111,7 @@ public class RestSpendClient {
                             @Nullable String searchQuery) {
     return Optional.ofNullable(
         restTemplate.getForObject(
-            nifflerSpendApiUri + "/v2/spends/all?username={username}&from={from}&to={to}&filterCurrency={filterCurrency}&searchQuery={searchQuery}"
+            nifflerSpendApiUri + "/v2/spends/all?username={username}&from={from}&to={to}&filterCurrency={filterCurrency}&searchQuery={searFchQuery}"
             + new HttpQueryPaginationAndSort(pageable),
             RestPage.class,
             username,

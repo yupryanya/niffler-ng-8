@@ -137,14 +137,7 @@ public class UserDataEntity implements Serializable {
         null,
         null,
         null,
-        new TestData(
-            null,
-            new ArrayList<>(),
-            new ArrayList<>(),
-            new ArrayList<>(),
-            new ArrayList<>(),
-            new ArrayList<>()
-        )
+        TestData.emptyTestData()
     );
   }
 }

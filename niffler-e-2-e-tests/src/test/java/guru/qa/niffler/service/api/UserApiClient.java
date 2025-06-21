@@ -13,6 +13,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.Selenide.sleep;
 import static guru.qa.niffler.utils.RandomDataUtils.newValidPassword;
@@ -66,7 +68,7 @@ public class UserApiClient implements UserClient {
         Response<UserJson> response = userDataApi.getUser(username).execute();
         UserJson userJson = response.body();
         if (userJson != null && userJson.id() != null) {
-          return userJson.withEmptyTestData();
+          return userJson.withEmptyTestData().withPassword(password);
         }
         sleep(100);
       }
@@ -137,10 +139,36 @@ public class UserApiClient implements UserClient {
   }
 
   @Step("Find all users with API")
-  public List<UserJson> allUsers(String username, String searchQuery) {
+  public List<UserJson> allUsers(String username, @Nullable String searchQuery) {
     if (username == null || username.isEmpty()) {
       throw new IllegalArgumentException("Username cannot be null or empty");
     }
     return execute(userDataApi.allUsers(username, searchQuery), SC_OK);
   }
+
+  public List<UserJson> allFriends(String username, @Nullable String searchQuery) {
+    if (username == null || username.isEmpty()) {
+      throw new IllegalArgumentException("Username cannot be null or empty");
+    }
+    return execute(userDataApi.friends(username, searchQuery), SC_OK);
+  }
+
+  public List<UserJson> getFriends(String username) {
+    return allFriends(username, null).stream()
+        .filter(u -> "FRIEND".equals(u.friendshipStatus()))
+        .collect(Collectors.toList());
+  }
+
+  public List<UserJson> getIncomeInvitations(String username) {
+    return allFriends(username, null).stream()
+        .filter(u -> "INVITE_RECEIVED".equals(u.friendshipStatus()))
+        .collect(Collectors.toList());
+  }
+
+  public List<UserJson> getOutcomeInvitations(String username) {
+    return allUsers(username, null).stream()
+        .filter(u -> "INVITE_SENT".equals(u.friendshipStatus()))
+        .collect(Collectors.toList());
+  }
+
 }

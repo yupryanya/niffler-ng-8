@@ -1,5 +1,6 @@
 package guru.qa.niffler.test.web;
 
+import guru.qa.niffler.jupiter.annotation.ApiLogin;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.ProfilePage;
@@ -10,10 +11,10 @@ import static guru.qa.niffler.utils.RandomDataUtils.newCategoryName;
 import static guru.qa.niffler.utils.RandomDataUtils.randomString;
 
 public class ProfilePageAlertTest extends BaseTestWeb {
-  @User()
+  @User
+  @ApiLogin
   @Test
   void shouldDisplaySuccessAlertWhenProfileNameUpdated(UserJson user) {
-    login(user);
     mainPage
         .getHeader()
         .toProfilePage()
@@ -21,11 +22,11 @@ public class ProfilePageAlertTest extends BaseTestWeb {
         .checkAlertMessage(PROFILE_UPDATED);
   }
 
-  @User()
+  @User
+  @ApiLogin
   @Test
   void shouldDisplaySuccessAlertWhenCategoryAdded(UserJson user) {
     String categoryName = newCategoryName();
-    login(user);
     mainPage
         .getHeader()
         .toProfilePage()
@@ -35,11 +36,11 @@ public class ProfilePageAlertTest extends BaseTestWeb {
         .checkAlertMessage(String.format(CATEGORY_ADDED, categoryName));
   }
 
-  @User()
+  @User
+  @ApiLogin
   @Test
   void shouldDisplayErrorAlertWhenCategoryNameTooLong(UserJson user) {
     String categoryName = randomString(100);
-    login(user);
     mainPage
         .getHeader()
         .toProfilePage()

@@ -116,7 +116,7 @@ public class UserDbClient implements UserClient {
 
       userAuth.create(authUserEntity);
       UserJson userJson = fromEntity(userEntity);
-      return userJson;
+      return userJson.withPassword(password);
     });
   }
 

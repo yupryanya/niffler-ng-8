@@ -9,6 +9,7 @@ import org.junit.platform.commons.support.AnnotationSupport;
 
 import javax.annotation.Nullable;
 
+import static guru.qa.niffler.utils.RandomDataUtils.newValidPassword;
 import static guru.qa.niffler.utils.RandomDataUtils.nonExistentUserName;
 
 public class UserExtension implements
@@ -19,19 +20,16 @@ public class UserExtension implements
   //  private final UserClient userClient = new UserDbClient();
   private final UserClient userClient = new UserApiClient();
 
-  private static final String defaultPassword = "testpassword";
-
   @Override
   public void beforeEach(ExtensionContext context) {
     AnnotationSupport.findAnnotation(context.getRequiredTestMethod(), User.class)
         .ifPresent(user -> {
           UserJson userJson;
-          if ("".equals(user.username())) {
-            userJson = userClient.createUser(nonExistentUserName(), defaultPassword);
-          } else {
-            userJson = userClient.findUserByUsername(user.username())
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + user.username()));
-          }
+          final String username = "".equals(user.username()) ? nonExistentUserName() : user.username();
+          final String password = newValidPassword();
+
+          userJson = userClient.createUser(username, password);
+
           if (user.incomeInvitations() > 0) {
             userClient.createIncomeInvitations(userJson, user.incomeInvitations());
           }
@@ -41,7 +39,7 @@ public class UserExtension implements
           if (user.friends() > 0) {
             userClient.createFriends(userJson, user.friends());
           }
-          context.getStore(NAMESPACE).put(context.getUniqueId(), userJson.withPassword(defaultPassword));
+          setContextUser(userJson);
         });
   }
 
@@ -52,11 +50,16 @@ public class UserExtension implements
 
   @Override
   public UserJson resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-    return contextUser();
+    return getContextUser();
   }
 
-  public static @Nullable UserJson contextUser() {
+  public static @Nullable UserJson getContextUser() {
     final ExtensionContext context = TestMethodContextExtension.context();
     return context.getStore(NAMESPACE).get(context.getUniqueId(), UserJson.class);
+  }
+
+  static void setContextUser(UserJson user) {
+    final ExtensionContext context = TestMethodContextExtension.context();
+    context.getStore(NAMESPACE).put(context.getUniqueId(), user);
   }
 }

@@ -16,6 +16,7 @@ import java.net.CookiePolicy;
 
 import static okhttp3.logging.HttpLoggingInterceptor.Level;
 import static okhttp3.logging.HttpLoggingInterceptor.Level.BODY;
+import static retrofit2.Converter.Factory;
 
 public class RestClient {
   protected static final Config CFG = Config.getInstance();
@@ -34,7 +35,7 @@ public class RestClient {
 
   public RestClient(String baseUrl,
                     boolean followRedirect,
-                    JacksonConverterFactory converterFactory,
+                    Factory converterFactory,
                     Level loggingLevel,
                     Interceptor... interceptors) {
 

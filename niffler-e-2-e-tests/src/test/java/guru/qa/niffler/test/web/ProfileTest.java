@@ -1,6 +1,7 @@
 package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
+import guru.qa.niffler.jupiter.annotation.ApiLogin;
 import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.CategoryJson;
@@ -16,10 +17,10 @@ public class ProfileTest extends BaseTestWeb {
           )
       }
   )
+  @ApiLogin
   @Test
   void activeCategoryShouldBePresentInCategoriesList(UserJson user) {
     final CategoryJson category = user.testData().categories().getFirst();
-    login(user);
     Selenide.open(ProfilePage.URL, ProfilePage.class)
         .getCategoriesTable()
         .verifyCategoryIsDisplayed(category.name());
@@ -32,10 +33,10 @@ public class ProfileTest extends BaseTestWeb {
           )
       }
   )
+  @ApiLogin
   @Test
   void archivedCategoryShouldBePresentInCategoriesList(UserJson user) {
     final CategoryJson category = user.testData().categories().getFirst();
-    login(user);
     mainPage
         .getHeader()
         .toProfilePage()

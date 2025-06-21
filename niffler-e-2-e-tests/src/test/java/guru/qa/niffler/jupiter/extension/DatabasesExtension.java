@@ -4,7 +4,6 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.jpa.EntityManagers;
 import guru.qa.niffler.data.tpl.Connections;
 import guru.qa.niffler.data.tpl.DataSources;
-import guru.qa.niffler.service.db.UserDbClient;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -15,12 +14,12 @@ public class DatabasesExtension implements SuiteExtension {
 
   @Override
   public void beforeSuite(ExtensionContext context) {
-    truncateTables(CFG.authJdbcUrl());
-    truncateTables(CFG.userdataJdbcUrl());
-    truncateTables(CFG.spendJdbcUrl());
+//    truncateTables(CFG.authJdbcUrl());
+//    truncateTables(CFG.userdataJdbcUrl());
+//    truncateTables(CFG.spendJdbcUrl());
 
     //For manual testing purposes
-//    new UserDbClient().createUser("admin", "admin");
+  //  new UserDbClient().createUser("admin", "testpassword");
   }
 
   @Override
