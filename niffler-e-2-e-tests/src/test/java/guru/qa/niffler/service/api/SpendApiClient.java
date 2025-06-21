@@ -4,6 +4,7 @@ import guru.qa.niffler.api.SpendApi;
 import guru.qa.niffler.api.core.RestClient;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
+import guru.qa.niffler.model.TestData;
 import guru.qa.niffler.service.SpendClient;
 import io.qameta.allure.Step;
 import retrofit2.Call;
@@ -83,5 +84,9 @@ public class SpendApiClient extends RestClient implements SpendClient {
   @Step("Get categories with API")
   public List<CategoryJson> getCategories(String username, boolean excludeArchived) {
     return execute(spendApi.getCategories(username, excludeArchived), SC_OK);
+  }
+
+  public TestData getSpendsTestData(String username) {
+    return TestData.emptyTestData();
   }
 }

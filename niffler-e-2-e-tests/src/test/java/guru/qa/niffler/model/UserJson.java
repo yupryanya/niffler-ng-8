@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import guru.qa.niffler.common.values.CurrencyValues;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
 import java.util.UUID;
 
 public record UserJson(
@@ -36,14 +35,7 @@ public record UserJson(
         null,
         null,
         null,
-        new TestData(
-            password,
-            null,
-            null,
-            null,
-            null,
-            null
-        )
+        TestData.emptyTestData().withPassword(password)
     );
   }
 
@@ -56,14 +48,7 @@ public record UserJson(
         this.photo,
         this.photoSmall,
         this.friendshipStatus,
-        new TestData(
-            password,
-            this.testData.categories(),
-            this.testData.spends(),
-            this.testData.friends(),
-            this.testData.outcomeInvitations(),
-            this.testData.incomeInvitations()
-        )
+        this.testData.withPassword(password)
     );
   }
 
@@ -89,14 +74,7 @@ public record UserJson(
         this.photo,
         this.photoSmall,
         this.friendshipStatus,
-        new TestData(
-            null,
-            new ArrayList<>(),
-            new ArrayList<>(),
-            new ArrayList<>(),
-            new ArrayList<>(),
-            new ArrayList<>()
-        )
+        TestData.emptyTestData()
     );
   }
 }

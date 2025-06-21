@@ -15,7 +15,7 @@ public record CategoryJson(
     String username,
     @JsonProperty("archived")
     boolean archived) {
-  public static CategoryJson generateRandomCategoryJsonWithUsername(String username) {
+  public static CategoryJson randomCategory(String username) {
     return new CategoryJson(
         null,
         newCategoryName(),

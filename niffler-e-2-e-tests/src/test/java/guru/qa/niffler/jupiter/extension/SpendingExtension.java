@@ -29,7 +29,7 @@ public class SpendingExtension implements
             return;
           }
 
-          UserJson contextUser = UserExtension.contextUser();
+          UserJson contextUser = UserExtension.getContextUser();
           final String username = contextUser != null ? contextUser.username() : user.username();
           final List<SpendJson> spends = new ArrayList<>();
 
