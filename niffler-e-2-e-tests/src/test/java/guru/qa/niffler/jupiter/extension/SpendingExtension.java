@@ -19,7 +19,7 @@ public class SpendingExtension implements
     ParameterResolver {
 
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(SpendingExtension.class);
-  private final SpendClient spendClient = new SpendApiClient();
+  private final SpendClient spendClient = SpendClient.getInstance();
 
   @Override
   public void beforeEach(ExtensionContext context) {

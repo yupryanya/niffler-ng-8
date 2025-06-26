@@ -1,7 +1,7 @@
 package guru.qa.niffler.data.entity.user;
 
 import guru.qa.niffler.common.values.CurrencyValues;
-import guru.qa.niffler.common.values.FriendshipStatus;
+import guru.qa.niffler.common.values.FriendshipDbStatus;
 import guru.qa.niffler.model.TestData;
 import guru.qa.niffler.model.UserJson;
 import jakarta.persistence.*;
@@ -51,7 +51,7 @@ public class UserDataEntity implements Serializable {
   @OneToMany(mappedBy = "addressee", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
   private List<FriendshipEntity> friendshipAddressees = new ArrayList<>();
 
-  public void addFriends(FriendshipStatus status, UserDataEntity... friends) {
+  public void addFriends(FriendshipDbStatus status, UserDataEntity... friends) {
     List<FriendshipEntity> friendsEntities = Stream.of(friends)
         .map(f -> {
           FriendshipEntity fe = new FriendshipEntity();
@@ -70,7 +70,7 @@ public class UserDataEntity implements Serializable {
           FriendshipEntity fe = new FriendshipEntity();
           fe.setRequester(i);
           fe.setAddressee(this);
-          fe.setStatus(FriendshipStatus.PENDING);
+          fe.setStatus(FriendshipDbStatus.PENDING);
           fe.setCreatedDate(new Date());
           return fe;
         }).toList();

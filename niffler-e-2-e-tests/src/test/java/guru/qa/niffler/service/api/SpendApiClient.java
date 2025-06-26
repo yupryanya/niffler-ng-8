@@ -30,16 +30,6 @@ public class SpendApiClient extends RestClient implements SpendClient {
     this.spendApi = retrofit.create(SpendApi.class);
   }
 
-  private @Nonnull <T> T execute(Call<T> call, int expectedStatusCode) {
-    try {
-      Response<T> response = call.execute();
-      assertEquals(expectedStatusCode, response.code(), "Unexpected HTTP status code");
-      return Objects.requireNonNull(response.body());
-    } catch (IOException e) {
-      throw new AssertionError("Failed to execute API request", e);
-    }
-  }
-
   @Override
   @Step("Create spend with API")
   public SpendJson createSpend(SpendJson spend) {

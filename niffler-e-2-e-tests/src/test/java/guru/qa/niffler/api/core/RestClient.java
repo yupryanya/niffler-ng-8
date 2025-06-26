@@ -8,14 +8,20 @@ import okhttp3.JavaNetCookieJar;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import org.apache.commons.lang.ArrayUtils;
+import retrofit2.Call;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
+import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
+import java.util.Objects;
 
 import static okhttp3.logging.HttpLoggingInterceptor.Level;
 import static okhttp3.logging.HttpLoggingInterceptor.Level.BODY;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static retrofit2.Converter.Factory;
 
 public class RestClient {
@@ -68,6 +74,24 @@ public class RestClient {
         .build();
   }
 
+  public @Nonnull <T> T execute(Call<T> call, int expectedStatusCode) {
+    try {
+      Response<T> response = call.execute();
+      assertEquals(expectedStatusCode, response.code(), "Unexpected HTTP status code");
+      return Objects.requireNonNull(response.body());
+    } catch (IOException e) {
+      throw new AssertionError("Failed to execute API request", e);
+    }
+  }
+
+  public void executeVoid(Call<Void> call, int expectedStatusCode) {
+    try {
+      Response<Void> response = call.execute();
+      assertEquals(expectedStatusCode, response.code(), "Unexpected HTTP status code");
+    } catch (IOException e) {
+      throw new AssertionError("Failed to execute API request", e);
+    }
+  }
 
   public class RestClientFactory {
     public static RestClient create(String baseUrl) {

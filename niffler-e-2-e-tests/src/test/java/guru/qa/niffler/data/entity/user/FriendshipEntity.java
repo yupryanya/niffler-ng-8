@@ -1,6 +1,6 @@
 package guru.qa.niffler.data.entity.user;
 
-import guru.qa.niffler.common.values.FriendshipStatus;
+import guru.qa.niffler.common.values.FriendshipDbStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,7 +31,7 @@ public class FriendshipEntity implements Serializable {
   private Date createdDate;
 
   @Enumerated(EnumType.STRING)
-  private FriendshipStatus status;
+  private FriendshipDbStatus status;
 
   @Override
   public final boolean equals(Object o) {

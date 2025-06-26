@@ -1,13 +1,15 @@
 package guru.qa.niffler.jupiter.extension;
 
 import guru.qa.niffler.jupiter.annotation.User;
+import guru.qa.niffler.model.TestData;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.UserClient;
-import guru.qa.niffler.service.api.UserApiClient;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
 
 import static guru.qa.niffler.utils.RandomDataUtils.newValidPassword;
 import static guru.qa.niffler.utils.RandomDataUtils.nonExistentUserName;
@@ -17,29 +19,36 @@ public class UserExtension implements
     BeforeEachCallback {
 
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(UserExtension.class);
-  //  private final UserClient userClient = new UserDbClient();
-  private final UserClient userClient = new UserApiClient();
+  private final UserClient userClient = UserClient.getInstance();
 
   @Override
   public void beforeEach(ExtensionContext context) {
     AnnotationSupport.findAnnotation(context.getRequiredTestMethod(), User.class)
         .ifPresent(user -> {
-          UserJson userJson;
-          final String username = "".equals(user.username()) ? nonExistentUserName() : user.username();
+          final String username = !"".equals(user.username()) ? user.username() : nonExistentUserName();
           final String password = newValidPassword();
-
-          userJson = userClient.createUser(username, password);
+          final UserJson createdUser = userClient.createUser(username, password);
+          List<UserJson> incomeInvitations = Collections.emptyList();
+          List<UserJson> outcomeInvitations = Collections.emptyList();
+          List<UserJson> friends = Collections.emptyList();
 
           if (user.incomeInvitations() > 0) {
-            userClient.createIncomeInvitations(userJson, user.incomeInvitations());
+            incomeInvitations = userClient.createIncomeInvitations(createdUser, user.incomeInvitations());
           }
           if (user.outcomeInvitations() > 0) {
-            userClient.createOutcomeInvitations(userJson, user.outcomeInvitations());
+            outcomeInvitations = userClient.createOutcomeInvitations(createdUser, user.outcomeInvitations());
           }
           if (user.friends() > 0) {
-            userClient.createFriends(userJson, user.friends());
+            friends = userClient.createFriends(createdUser, user.friends());
           }
-          setContextUser(userJson);
+
+          final TestData testData = TestData.emptyTestData()
+              .withPassword(password)
+              .withIncomeInvitations(incomeInvitations)
+              .withOutcomeInvitations(outcomeInvitations)
+              .withFriends(friends);
+
+          setContextUser(createdUser.withTestData(testData));
         });
   }
 

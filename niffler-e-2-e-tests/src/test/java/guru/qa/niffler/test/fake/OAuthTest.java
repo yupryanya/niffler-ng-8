@@ -1,7 +1,8 @@
-package guru.qa.niffler.test.api;
+package guru.qa.niffler.test.fake;
 
 import guru.qa.niffler.jupiter.annotation.*;
 import guru.qa.niffler.model.UserJson;
+import guru.qa.niffler.test.rest.BaseTestRest;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -9,7 +10,7 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class OAuthTest {
+public class OAuthTest extends BaseTestRest {
   @User(
       friends = 3,
       incomeInvitations = 2,
