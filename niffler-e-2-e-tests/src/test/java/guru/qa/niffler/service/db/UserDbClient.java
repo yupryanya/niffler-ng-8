@@ -7,8 +7,6 @@ import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.user.UserDataEntity;
 import guru.qa.niffler.data.repository.AuthUserRepository;
 import guru.qa.niffler.data.repository.UserDataRepository;
-import guru.qa.niffler.data.repository.impl.auth.AuthUserRepositoryHibernate;
-import guru.qa.niffler.data.repository.impl.userdata.UserDataRepositoryHibernate;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.UserClient;
@@ -27,11 +25,8 @@ import static guru.qa.niffler.utils.RandomDataUtils.nonExistentUserName;
 public class UserDbClient implements UserClient {
   private static final Config CFG = Config.getInstance();
 
-//  AuthUserRepository userAuth = new AuthUserRepositoryJdbc();
-//  UserDataRepository userData = new UserDataRepositoryJdbc();
-
-  AuthUserRepository userAuth = new AuthUserRepositoryHibernate();
-  UserDataRepository userData = new UserDataRepositoryHibernate();
+  AuthUserRepository userAuth = AuthUserRepository.getInstance();
+  UserDataRepository userData = UserDataRepository.getInstance();
 
   private final XaTransactionTemplate xaTransactionTemplate = new XaTransactionTemplate(
       CFG.authJdbcUrl(), CFG.userdataJdbcUrl()
@@ -47,9 +42,10 @@ public class UserDbClient implements UserClient {
       UserDataEntity userEntity = findUserById(user.id());
       List<UserJson> addedFriends = new ArrayList<>();
       for (int i = 0; i < count; i++) {
-        UserDataEntity friendEntity = UserDataEntity.fromJson(createUser(nonExistentUserName(), newValidPassword()));
+        final String password = newValidPassword();
+        UserDataEntity friendEntity = UserDataEntity.fromJson(createUser(nonExistentUserName(), password));
         userData.addFriendship(userEntity, friendEntity);
-        addedFriends.add(fromEntity(friendEntity));
+        addedFriends.add(fromEntity(friendEntity).withPassword(password));
       }
       return addedFriends;
     });
@@ -83,9 +79,10 @@ public class UserDbClient implements UserClient {
       UserDataEntity userEntity = findUserById(user.id());
       List<UserJson> createdInvitations = new ArrayList<>();
       for (int i = 0; i < count; i++) {
-        UserDataEntity requesterEntity = UserDataEntity.fromJson(createUser(nonExistentUserName(), newValidPassword()));
+        final String password = newValidPassword();
+        UserDataEntity requesterEntity = UserDataEntity.fromJson(createUser(nonExistentUserName(), password));
         userData.addInvitation(requesterEntity, userEntity);
-        createdInvitations.add(fromEntity(requesterEntity));
+        createdInvitations.add(fromEntity(requesterEntity).withPassword(password));
       }
       return createdInvitations;
     });
@@ -116,7 +113,7 @@ public class UserDbClient implements UserClient {
 
       userAuth.create(authUserEntity);
       UserJson userJson = fromEntity(userEntity);
-      return userJson.withPassword(password);
+      return userJson.withEmptyTestData().withPassword(password);
     });
   }
 

@@ -1,6 +1,6 @@
 package guru.qa.niffler.data.repository.impl.userdata;
 
-import guru.qa.niffler.common.values.FriendshipStatus;
+import guru.qa.niffler.common.values.FriendshipDbStatus;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.entity.user.FriendshipEntity;
 import guru.qa.niffler.data.entity.user.UserDataEntity;
@@ -118,7 +118,7 @@ public class UserDataRepositorySpringJdbc implements UserDataRepository {
     FriendshipEntity request = new FriendshipEntity();
     request.setRequester(requester);
     request.setAddressee(addressee);
-    request.setStatus(FriendshipStatus.PENDING);
+    request.setStatus(FriendshipDbStatus.PENDING);
 
     createFriendshipEntity(request);
   }
@@ -128,12 +128,12 @@ public class UserDataRepositorySpringJdbc implements UserDataRepository {
     FriendshipEntity friendship1 = new FriendshipEntity();
     friendship1.setRequester(friend1);
     friendship1.setAddressee(friend2);
-    friendship1.setStatus(FriendshipStatus.ACCEPTED);
+    friendship1.setStatus(FriendshipDbStatus.ACCEPTED);
 
     FriendshipEntity friendship2 = new FriendshipEntity();
     friendship2.setRequester(friend2);
     friendship2.setAddressee(friend1);
-    friendship2.setStatus(FriendshipStatus.ACCEPTED);
+    friendship2.setStatus(FriendshipDbStatus.ACCEPTED);
 
     createFriendshipEntity(friendship1);
     createFriendshipEntity(friendship2);

@@ -114,15 +114,17 @@ public class UserApiClient implements UserClient {
 
   @Override
   @Step("Create income invitations with API")
-  public List<UserJson> createIncomeInvitations(UserJson user, int count) {
+  public @Nonnull List<UserJson> createIncomeInvitations(UserJson user, int count) {
     if (count < 1) {
       throw new IllegalArgumentException("Count must be greater than 0");
     }
     List<UserJson> addedInvitations = new ArrayList<>();
     for (int i = 0; i < count; i++) {
-      UserJson requester = createUser(nonExistentUserName(), newValidPassword());
-      execute(userDataApi.sendInvitation(requester.username(), user.username()), SC_OK);
-      addedInvitations.add(requester);
+      final String requesterUsername = nonExistentUserName();
+      final String requesterPassword = newValidPassword();
+      UserJson requester = createUser(requesterUsername, requesterPassword);
+      execute(userDataApi.sendInvitation(requesterUsername, user.username()), SC_OK);
+      addedInvitations.add(requester.withEmptyTestData().withPassword(requesterPassword));
     }
     user.testData().incomeInvitations().addAll(addedInvitations);
     return addedInvitations;

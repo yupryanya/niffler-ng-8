@@ -1,6 +1,6 @@
 package guru.qa.niffler.data.repository.impl.userdata;
 
-import guru.qa.niffler.common.values.FriendshipStatus;
+import guru.qa.niffler.common.values.FriendshipDbStatus;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.entity.user.UserDataEntity;
 import guru.qa.niffler.data.jpa.EntityManagers;
@@ -56,7 +56,7 @@ public class UserDataRepositoryHibernate implements UserDataRepository {
 @Override
 public void addInvitation(UserDataEntity requester, UserDataEntity addressee) {
   entityManager.joinTransaction();
-  requester.addFriends(FriendshipStatus.PENDING, addressee);
+  requester.addFriends(FriendshipDbStatus.PENDING, addressee);
   entityManager.merge(requester);
   entityManager.merge(addressee);
 }
@@ -64,8 +64,8 @@ public void addInvitation(UserDataEntity requester, UserDataEntity addressee) {
   @Override
   public void addFriendship(UserDataEntity friend1, UserDataEntity friend2) {
     entityManager.joinTransaction();
-    friend1.addFriends(FriendshipStatus.ACCEPTED, friend2);
-    friend2.addFriends(FriendshipStatus.ACCEPTED, friend1);
+    friend1.addFriends(FriendshipDbStatus.ACCEPTED, friend2);
+    friend2.addFriends(FriendshipDbStatus.ACCEPTED, friend1);
     entityManager.merge(friend1);
     entityManager.merge(friend2);
   }

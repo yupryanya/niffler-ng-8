@@ -18,14 +18,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class SpendDbClient implements SpendClient {
   private static final Config CFG = Config.getInstance();
 
-  // SpendRepository spend = new SpendRepositoryJdbc();
-  // SpendRepository spend = new SpendRepositorySpringJdbc();
-
-  SpendRepository spend = new SpendRepositoryHibernate();
-
-  private final JdbcTransactionTemplate jdbcTxTemplate = new JdbcTransactionTemplate(
-      CFG.spendJdbcUrl()
-  );
+  SpendRepository spend = SpendRepository.getInstance();
 
   private final XaTransactionTemplate xaTransactionTemplate = new XaTransactionTemplate(
       CFG.spendJdbcUrl()

@@ -1,4 +1,4 @@
-package guru.qa.niffler.test.api;
+package guru.qa.niffler.test.rest;
 
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.UserJson;
@@ -12,13 +12,12 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Order(1)
-public class EmptyUsersListTest {
+public class EmptyUsersListTest extends BaseTestRest {
   @Disabled("Default 'admin' user is created in the database")
   @User
   @Test
   void verifyAllUsersResponseIsEmpty(UserJson user) {
-    final UserApiClient client = new UserApiClient();
-    List<UserJson> users = client.allUsers(user.username(), "");
+    List<UserJson> users = userApiClient.allUsers(user.username(), "");
     assertTrue(users.isEmpty());
   }
 }

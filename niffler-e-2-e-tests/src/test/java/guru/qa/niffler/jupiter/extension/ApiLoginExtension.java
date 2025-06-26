@@ -38,7 +38,7 @@ public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver 
     this.setupBrowser = true;
   }
 
-  public static ApiLoginExtension restApiLoginExtension() {
+  public static ApiLoginExtension rest() {
     return new ApiLoginExtension(false);
   }
 
@@ -63,15 +63,14 @@ public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver 
             if (hasApiLoginCredentials) {
               username = apiLogin.username();
               password = apiLogin.password();
+              final UserJson user = userApiClient.findUserByUsername(username)
+                  .orElseThrow(() -> new RuntimeException("User not found: " + username));
+              final TestData testData = getTestData(username, password);
+              setContextUser(user.withTestData(testData));
             } else {
               throw new IllegalArgumentException("User is not set. Use username/password in @ApiLogin.");
             }
           }
-
-          final UserJson user = userApiClient.findUserByUsername(username)
-              .orElseThrow(() -> new RuntimeException("User not found: " + username));
-          final TestData testData = getTestData(username, password);
-          setContextUser(user.withTestData(testData));
 
           try {
             String token = authApiClient.login(username, password);
@@ -104,16 +103,14 @@ public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver 
   }
 
   @Override
-  public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws
-      ParameterResolutionException {
+  public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
     return parameterContext.getParameter().getType().isAssignableFrom(String.class)
            && AnnotationSupport.isAnnotated(parameterContext.getParameter(), Token.class);
   }
 
   @Override
-  public String resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws
-      ParameterResolutionException {
-    return getToken();
+  public String resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
+    return "Bearer " + getToken();
   }
 
   public static void setToken(String token) {

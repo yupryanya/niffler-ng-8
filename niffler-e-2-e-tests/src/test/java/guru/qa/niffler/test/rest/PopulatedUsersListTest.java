@@ -1,4 +1,4 @@
-package guru.qa.niffler.test.api;
+package guru.qa.niffler.test.rest;
 
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.UserJson;
@@ -12,12 +12,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Order.DEFAULT;
 
 @Order(DEFAULT + 1)
-public class PopulatedUsersListTest {
-  @User()
+public class PopulatedUsersListTest extends BaseTestRest{
+  @User
   @Test
   void verifyAllUsersResponseIsNotEmpty(UserJson user) {
-    final UserApiClient client = new UserApiClient();
-    List<UserJson> users = client.allUsers(user.username(), "");
+    List<UserJson> users = userApiClient.allUsers(user.username(), "");
     assertFalse(users.isEmpty());
   }
 }

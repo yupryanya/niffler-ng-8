@@ -1,7 +1,7 @@
 package guru.qa.niffler.data.extractor;
 
 import guru.qa.niffler.common.values.CurrencyValues;
-import guru.qa.niffler.common.values.FriendshipStatus;
+import guru.qa.niffler.common.values.FriendshipDbStatus;
 import guru.qa.niffler.data.entity.user.FriendshipEntity;
 import guru.qa.niffler.data.entity.user.UserDataEntity;
 import org.springframework.dao.DataAccessException;
@@ -56,7 +56,7 @@ public class UserDataEntityExtractor implements ResultSetExtractor<UserDataEntit
         friendship.setRequester(createUserReference(requesterId));
         friendship.setAddressee(createUserReference(addresseeId));
         friendship.setCreatedDate(rs.getDate("created_date"));
-        friendship.setStatus(FriendshipStatus.valueOf(rs.getString("status")));
+        friendship.setStatus(FriendshipDbStatus.valueOf(rs.getString("status")));
 
         if (requesterId.equals(user.getId())) {
           user.getFriendshipRequests().add(friendship);
