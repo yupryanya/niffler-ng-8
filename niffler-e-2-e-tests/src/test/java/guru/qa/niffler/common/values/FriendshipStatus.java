@@ -1,6 +1,7 @@
 package guru.qa.niffler.common.values;
 
 public enum FriendshipStatus {
-  PENDING,
-  ACCEPTED
+  INVITE_SENT,
+  INVITE_RECEIVED,
+  FRIEND
 }

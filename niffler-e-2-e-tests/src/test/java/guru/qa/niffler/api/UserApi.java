@@ -23,28 +23,10 @@ public interface UserApi {
       @Query("searchQuery") String searchQuery
   );
 
-  @GET("internal/v2/users/all")
-  Call<UserJson> allUsersPaged(
-      @Query("username") String username,
-      @Query("searchQuery") String searchQuery,
-      @Query("page") int page,
-      @Query("size") int size,
-      @Query("sort") String sort
-  );
-
   @GET("internal/friends/all")
   Call<List<UserJson>> friends(
       @Query("username") String username,
       @Query("searchQuery") String searchQuery
-  );
-
-  @GET("internal/v2/friends/all")
-  Call<UserJson> friendsPaged(
-      @Query("username") String username,
-      @Query("searchQuery") String searchQuery,
-      @Query("page") int page,
-      @Query("size") int size,
-      @Query("sort") String sort
   );
 
   @POST("internal/invitations/send")
