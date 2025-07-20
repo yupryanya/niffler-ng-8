@@ -15,7 +15,7 @@ public class StatGqlTest extends BaseGqlTest {
   @User
   @ApiLogin
   @Test
-  void allCurrenciesShouldBeReturnedFromCategory(@Token String token) {
+  void newUserStatShouldBeEmpty(@Token String token) {
     ApolloCall<StatQuery.Data> statCall = apolloClient
         .query(StatQuery.builder()
             .statCurrency(null)
