@@ -22,7 +22,7 @@ public class UserGqlTest extends BaseGqlTest {
   @User(friends = 1)
   @ApiLogin
   @Test
-  void anotherUserCategoriesQueryShouldReturnError1(@Token String token) {
+  void anotherUserCategoriesQueryShouldReturnError(@Token String token) {
     final ApolloCall<FriendCategoriesQuery.Data> allPeopleCall = apolloClient
         .query(FriendCategoriesQuery.builder()
             .page(0)
@@ -39,7 +39,7 @@ public class UserGqlTest extends BaseGqlTest {
   @User
   @ApiLogin
   @Test
-  void userQueryOverMaxDepthShouldReturnErrorMessageText(@Token String token) {
+  void userQueryOverMaxDepthShouldReturnError(@Token String token) {
     System.out.println(token);
     final ApolloCall<UserQuery.Data> allPeopleCall = apolloClient.query(UserQuery.builder()
             .page(0)
