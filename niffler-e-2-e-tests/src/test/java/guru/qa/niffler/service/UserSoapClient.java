@@ -78,12 +78,8 @@ public class UserSoapClient extends RestClient {
 
   @NotNull
   @Step("Send friendship invitation using SOAP")
-  public UserResponse sendInvitation(SendInvitationRequest sendInvitationRequest) {
-    try {
+  public UserResponse sendInvitation(SendInvitationRequest sendInvitationRequest) throws IOException {
       return userdataSoapApi.sendInvitation(sendInvitationRequest).execute().body();
-    } catch (IOException e) {
-      throw new RuntimeException("Failed to send invitation", e);
-    }
   }
 
   private List<User> filterByStatus(UsersResponse response, FriendshipStatus status) {
