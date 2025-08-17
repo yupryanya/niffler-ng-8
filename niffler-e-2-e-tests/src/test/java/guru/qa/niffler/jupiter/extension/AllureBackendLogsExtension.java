@@ -16,23 +16,30 @@ public class AllureBackendLogsExtension implements SuiteExtension {
   @SneakyThrows
   @Override
   public void afterSuite() {
-    AllureLifecycle allureLifecycle = Allure.getLifecycle();
-    final String caseId = UUID.randomUUID().toString();
-    allureLifecycle.scheduleTestCase(new TestResult().setUuid(caseId).setName(caseName));
-    allureLifecycle.startTestCase(caseId);
+    if ("docker".equals(System.getProperty("test.env"))) {
+      System.err.println("Skipping backend logs attachment in Docker environment");
+    } else {
+      AllureLifecycle allureLifecycle = Allure.getLifecycle();
+      final String caseId = UUID.randomUUID().toString();
+      allureLifecycle.scheduleTestCase(new TestResult().setUuid(caseId).setName(caseName));
+      allureLifecycle.startTestCase(caseId);
 
-    for (String service : services) {
-      allureLifecycle.addAttachment(
-          service + " log",
-          "text/html",
-          ".log",
-          Files.newInputStream(
-              Path.of("./logs/" + service + "/app.log")
-          )
-      );
+      for (String service : services) {
+        Path logPath = Path.of("/logs/" + service + "/app.log");
+        if (Files.exists(logPath)) {
+          allureLifecycle.addAttachment(
+              service + " log",
+              "text/html",
+              ".log",
+              Files.newInputStream(logPath)
+          );
+        } else {
+          System.err.println("Log file not found: " + logPath);
+        }
+      }
+
+      allureLifecycle.stopTestCase(caseId);
+      allureLifecycle.writeTestCase(caseId);
     }
-
-    allureLifecycle.stopTestCase(caseId);
-    allureLifecycle.writeTestCase(caseId);
   }
 }

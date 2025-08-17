@@ -8,26 +8,66 @@ export ALLURE_DOCKER_API=http://allure:5050/
 export HEAD_COMMIT_MESSAGE="local build"
 export ARCH=$(uname -m)
 
-docker compose down
-docker_containers=$(docker ps -a -q)
-docker_images=$(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'niffler')
+BROWSER=${1:-chrome}
+if [ "$BROWSER" == "firefox" ]; then
+  selenoid_image="selenoid/vnc_firefox:125.0"
+else
+  selenoid_image="selenoid/vnc_chrome:128.0"
+fi
 
-if [ ! -z "$docker_containers" ]; then
-  echo "### Stop containers: $docker_containers ###"
+echo "### Selected browser: $BROWSER ($selenoid_image) ###"
+export BROWSER
+
+docker compose down
+
+docker_containers=$(docker ps -a -q)
+if [ -n "$docker_containers" ]; then
+  echo "### Stopping and removing containers: $docker_containers ###"
   docker stop $docker_containers
   docker rm $docker_containers
 fi
 
-if [ ! -z "$docker_images" ]; then
-  echo "### Remove images: $docker_images ###"
-  docker rmi $docker_images
-fi
-
-echo '### Java version ###'
+echo "### Java version ###"
 java --version
 bash ./gradlew clean
-bash ./gradlew jibDockerBuild -x :niffler-e-2-e-tests:test
 
-docker pull selenoid/vnc_chrome:127.0
+echo "### Checking for missing Docker images ###"
+
+docker_images=(
+  "$PREFIX/niffler-userdata-docker:latest"
+  "$PREFIX/niffler-spend-docker:latest"
+  "$PREFIX/niffler-gateway-docker:latest"
+  "$PREFIX/niffler-currency-docker:latest"
+  "$PREFIX/niffler-auth-docker:latest"
+)
+
+image_exists() {
+  docker images --format '{{.Repository}}:{{.Tag}}' | grep -q "^$1$"
+}
+
+missing_tasks=()
+
+for image in "${docker_images[@]}"; do
+  if image_exists "$image"; then
+    echo "image exists: $image"
+  else
+    echo "image not found: $image"
+    project=$(echo "$image" | sed -E "s#^$PREFIX/(.*)-docker:.*#\1#")
+    task=":$project:jibDockerBuild"
+    missing_tasks+=("$task")
+  fi
+done
+
+if [ ${#missing_tasks[@]} -gt 0 ]; then
+  echo "### Building missing service images via Jib ###"
+  bash ./gradlew "${missing_tasks[@]}"
+else
+  echo "### All service images are present. Skipping service image build. ###"
+fi
+
+docker compose build niffler-ng-client
+docker compose build niffler-e-2-e
+
+docker pull $selenoid_image
 docker compose up -d
 docker ps -a
