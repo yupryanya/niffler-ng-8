@@ -65,9 +65,6 @@ else
   echo "### All service images are present. Skipping service image build. ###"
 fi
 
-docker compose build niffler-ng-client
-docker compose build niffler-e-2-e
-
 docker pull $selenoid_image
 docker compose up -d
 docker ps -a
