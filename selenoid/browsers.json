@@ -1,17 +1,23 @@
 {
   "chrome": {
-    "default": "127.0",
+    "default": "128.0",
     "versions": {
-      "125.0": {
-        "image": "selenoid/vnc_chrome:125.0",
+      "128.0": {
+        "image": "selenoid/vnc_chrome:128.0",
         "port": "4444",
         "env": [
           "TZ=Europe/Moscow"
         ]
-      },
-      "127.0": {
-        "image": "selenoid/vnc_chrome:127.0",
+      }
+    }
+  },
+  "firefox": {
+    "default": "125.0",
+    "versions": {
+      "125.0": {
+        "image": "selenoid/vnc_firefox:125.0",
         "port": "4444",
+        "path": "/wd/hub",
         "env": [
           "TZ=Europe/Moscow"
         ]
