@@ -48,13 +48,43 @@ allure {
     }
 }
 
-xjcGeneration {
-    defaultAdditionalXjcOptions = ['encoding': 'UTF-8']
-    schemas {
-        wsdlSchema {
-            schemaFile = 'userdata.wsdl'
-            javaPackageName = 'jaxb.userdata'
-            sourceSet = 'test'
+configurations {
+    jaxb
+}
+
+tasks.register('genJaxb') {
+    ext.sourcesDir = "${buildDir}/generated-sources/jaxb"
+    ext.classesDir = "${buildDir}/classes/jaxb"
+
+    outputs.dir classesDir
+
+    doLast {
+        def schema = project.ext.userdataWsdlUrl
+
+        project.ant {
+            taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask",
+                    classpath: configurations.jaxb.asPath
+            mkdir(dir: sourcesDir)
+            mkdir(dir: classesDir)
+
+            xjc(destdir: sourcesDir, schema: schema, package: "guru.qa.jaxb.userdata") {
+                arg(value: "-wsdl")
+                produces(dir: sourcesDir, includes: "**/*.java")
+            }
+
+            javac(destdir: classesDir, source: 17, target: 17, debug: true,
+                    debugLevel: "lines,vars,source",
+                    classpath: configurations.jaxb.asPath) {
+                src(path: sourcesDir)
+                include(name: "**/*.java")
+                include(name: "*.java")
+            }
+
+            copy(todir: classesDir) {
+                fileset(dir: sourcesDir, erroronmissingdir: false) {
+                    exclude(name: "**/*.java")
+                }
+            }
         }
     }
 }
@@ -79,7 +109,7 @@ sourceSets {
     test {
         java {
             srcDir('src/test/java')
-            srcDir("$buildDir/generated-sources/test/xjc")
+            srcDir("$buildDir/generated-sources/jaxb")
             srcDir("$buildDir/generated/source/apollo/niffler")
         }
     }
@@ -150,7 +180,13 @@ dependencies {
     // SOAP
     testImplementation "com.sun.xml.messaging.saaj:saaj-impl:${saajVersion}"
     testImplementation "jakarta.xml.bind:jakarta.xml.bind-api:${jakartaJaxbVersion}"
-    xjc "org.glassfish.jaxb:jaxb-xjc:${project.ext.jakartaJaxbVersion}"
+    jaxb "org.glassfish.jaxb:jaxb-xjc:${jakartaJaxbVersion}"
+    jaxb "org.glassfish.jaxb:jaxb-runtime:${jakartaJaxbVersion}"
+    jaxb "com.sun.xml.bind:jaxb-impl:${jakartaJaxbVersion}"
+    jaxb "com.sun.xml.bind:jaxb-core:${jakartaJaxbVersion}"
+
+    compileJava.dependsOn(tasks.named("genJaxb"))
+
     // Kafka
     testImplementation "org.apache.kafka:kafka-clients:${kafkaClientsVersion}"
     // Wiremock
