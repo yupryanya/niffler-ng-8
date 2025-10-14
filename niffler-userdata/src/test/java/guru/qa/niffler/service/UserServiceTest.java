@@ -15,19 +15,19 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static guru.qa.niffler.model.FriendshipStatus.INVITE_SENT;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -69,24 +69,24 @@ class UserServiceTest {
 
   @ValueSource(strings = {
       "data:image/png;base64,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
-          "/v4AAAAZm20anW4bnW4IdFAanW4anW4BZUQbnm8bnm8anW4anG4VflganW4anW4Jd1Ibnm8EbEoDaUcbnW4anW4anW4bnm8anW4anW4" +
-          "anG4BZUQWlGcHKR0anG0anW4FbksanG4anW4FbEobnm4anW4anW4anW4anW4anW4Zm2wanG0ZmmwZm20BY0MZmmwanW4anG4anG0cnm9B" +
-          "roj0+vj9/v4hoXIAYkMfoHEMfFYLe1QWlGgTjWIQh14XlWgNf1gNf1gAYUIAYkIAYUIAYUIAYUIKeFMAYUIEakgAYUISimAAYUIAYEEAYUE" +
-          "AYUIAYUIAYUIBCwcanW4MSjQHLB8BBwUJOCcNTzcSbUwVe1YanW4AAwIPWj8Sakvj8+0LQC0ZmmwAY0MAY0MAYkNdupglonVovp9RtJFbuZg1" +
-          "qX8Zm2yAyK7f8er3+/p9x6yk2MUDaUi038+Fy7IHck6w3c0KeFMGb0wEakllvZ4IdVAGcE0Le1UKeVMbnm8AAAD///8AYUIanW4Zm20amGsCEAs" +
-          "GJhoMfFYZmmwOVj0EHBQYj2QBBgQSbEwYjGIam2wUd1MYkmYCDQkFHhUOVDsJdVEJNSUZlWgSbU0Zk2cVkmYABANqv6Hs9vKr28pTtpLn9fBeupn+/" +
-          "v46q4Mdn3D6/PsDaUcPhFwBZEQIc08AYkIYmWsVfliU0bsAAQALQS0ZlWkOUjkYjmMUeFSb1MB5xqoBCQYDFg8KPSsHKx4Zl2oYkGV3xakanG4NUDgcnnC" +
-          "OzrcIMiMzqH5IsYv1+vmHzLNauJbF5tq84tRUtpPX7eWg1sJDr4gOgVn6/fyCyrArpXlwwqWm2cfa7+goo3fB5Ng9rIUjoXQhoHOe1sLT7ONLso0OgVrt9/P9/v2" +
-          "+49XI59zW7eUKeVOYug0QAAAAhnRSTlP+/q/+/gX+AP7+/vYU/QO9kAb7sv7+EcH+helU03EZM/0BIQj+/vv3E+2o/rBEFZlayYYr4Aj9RPrrlv7+/v7+VP71Bf7Zs" +
-          "PXhfOkTkvUd/ob+OP58/uHz2bD+0P7+/v7+/v7P/v7+/v66r5CQ/v7+/v7+uv7+/v7+kv7+Hf44hpL+HYY4/hahmy4AAAMTSURBVEjHY2BHBqbmRsUmagwMbVCkZpJp" +
-          "ZG6KooQBiW1sZQlXCkdtDJZWxlg1KGlZMDBg08DQZqGlhKGBT5a7DQ/gluVD1SAmDDEMuw0gJCyGrEEumoGQBoZkOYQGHpk2IoAMD0yDID/cMDw2tDHwC0I1SDIQp4FBEq" +
-          "JBXgirC7oXTpvcgyokJA/SoCjehmkDV+K8XrZ2zri+iYeR7RNXBGrQVcDUMGMSZzsnBO2bw4jQoKAL1KCD4ZiuOdvakUDfTISUDjuDnjoDmg1dCRCzo/aDXAVkzp4PV6Kux2DA" +
-          "gK5hARtQFdsBUeY2kWkTZ4H0xiO8YcCgj+6gQ71AZ8zaDeXNPNjePmkLQlafwRDdhlSgmVNE4YI9fTE9SAFlyKCJbsNsoAU7kfjTUWQ1GRjQbJicAgz+Hdhjuo2BAT0VMLTNAPo4F" +
-          "ipivxybBjQwFeii7RDm40drV2NEEoYNiUAbMsDc6mccHA8JOykJqEEVzG3s4OBY4UjQSfMXt7cvXghirXna0bHqHkEnMagC4+EYWOQ5B0dHLkEnMaS1c87bBRZZBtSwhKCT2o6eXNAFYV" +
-          "3o6OhYSdhJcGS9lINjlQ2GDd04NawEhtJS9FDiYnBHtm/1OQT7/kugi26hu8idwRWhfU25re1yGPdBLUcHh90V9IhzZXBD8IChwnGmxB7MtnkBDCKOCoy05MbgibDu4lqgIzpWXD5y8+zdayD" +
-          "mpTsYYejJUOeC8HR+GdBUBLpdhJG8XVoYnD2QQqmgFElD1Q3M/ODhzMBez4wUrHnX0yGq7c4XWmNmIOZmYLlU44TiyOOn927dc2LJKazFp1MTqGytXERsYbyoAVwYa0hNaCMKTJDSgBT30rwixN" +
-          "ggwisNq4EEJLoIa+iSEIBXWaxMc7sJuad7LhMrolJUztJWwW+DijaTMnK1y5pj9oQLtwauq2bZrGgtAQevdetxuKt7/TovB8ymg7eP7wb/4M3oNmwO9t/g6+ONtXHiFxAWuilw4ysWln4oat0YuCk0" +
-          "LMAPR2sG6JWgkMiI8E44CI+IDAliRVECAE4WhZg/rX3CAAAAAElFTkSuQmCC",
+      "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",
       ""
   })
   @ParameterizedTest
@@ -158,6 +158,150 @@ class UserServiceTest {
 
     assertEquals(secondTestUserName, invitation.username());
     assertEquals(thirdTestUserName, friend.username());
+  }
+
+  @Test
+  void getCurrentUserShouldReturnUserJsonFromEntity(@Mock UserRepository userRepository) {
+    when(userRepository.findByUsername(eq(mainTestUserName)))
+        .thenReturn(Optional.of(mainTestUser));
+
+    userService = new UserService(userRepository);
+
+    UserJson result = userService.getCurrentUser(mainTestUserName);
+
+    assertEquals(mainTestUserUuid, result.id());
+    assertEquals(mainTestUserName, result.username());
+    assertEquals(CurrencyValues.RUB, result.currency());
+  }
+
+  @Test
+  void getCurrentUserShouldReturnDefaultUserJsonIfNotFound(@Mock UserRepository userRepository) {
+    when(userRepository.findByUsername(eq(notExistingUser)))
+        .thenReturn(Optional.empty());
+
+    userService = new UserService(userRepository);
+
+    UserJson result = userService.getCurrentUser(notExistingUser);
+
+    assertNull(result.id());
+    assertEquals(notExistingUser, result.username());
+    assertNull(result.firstname());
+    assertNull(result.surname());
+    assertNull(result.fullname());
+    assertEquals(CurrencyValues.RUB, result.currency());
+    assertNull(result.photo());
+  }
+
+  @Test
+  void allUsersWithoutSearchQueryShouldCallFindByUsernameNot(@Mock UserRepository userRepository) {
+    when(userRepository.findByUsernameNot(mainTestUserName)).thenReturn(List.of());
+
+    userService = new UserService(userRepository);
+
+    userService.allUsers(mainTestUserName, null);
+
+    verify(userRepository, times(1)).findByUsernameNot(eq(mainTestUserName));
+    verify(userRepository, never()).findByUsernameNot(eq(mainTestUserName), anyString());
+  }
+
+  @Test
+  void allUsersWithSearchQueryShouldCallFindByUsernameNotWithQuery(@Mock UserRepository userRepository) {
+    String query = "emma";
+    when(userRepository.findByUsernameNot(mainTestUserName, query)).thenReturn(List.of());
+
+    userService = new UserService(userRepository);
+
+    userService.allUsers(mainTestUserName, query);
+
+    verify(userRepository, times(1)).findByUsernameNot(eq(mainTestUserName), eq(query));
+    verify(userRepository, never()).findByUsernameNot(eq(mainTestUserName));
+  }
+
+  @Test
+  void pagedAllUsersWithoutSearchQueryShouldCallFindByUsernameNotPageable(@Mock UserRepository userRepository) {
+    Pageable pageable = PageRequest.of(0, 10);
+    when(userRepository.findByUsernameNot(mainTestUserName, pageable)).thenReturn(Page.empty());
+
+    userService = new UserService(userRepository);
+
+    userService.allUsers(mainTestUserName, pageable, null);
+
+    verify(userRepository, times(1)).findByUsernameNot(eq(mainTestUserName), eq(pageable));
+    verify(userRepository, never()).findByUsernameNot(eq(mainTestUserName), anyString(), any(Pageable.class));
+  }
+
+  @Test
+  void pagedAllUsersWithSearchQueryShouldCallFindByUsernameNotWithQueryAndPageable(@Mock UserRepository userRepository) {
+    Pageable pageable = PageRequest.of(0, 10);
+    String query = "emma";
+    when(userRepository.findByUsernameNot(mainTestUserName, query, pageable)).thenReturn(Page.empty());
+
+    userService = new UserService(userRepository);
+
+    userService.allUsers(mainTestUserName, pageable, query);
+
+    verify(userRepository, times(1)).findByUsernameNot(eq(mainTestUserName), eq(query), eq(pageable));
+    verify(userRepository, never()).findByUsernameNot(eq(mainTestUserName), eq(pageable));
+  }
+
+  @Test
+  void friendsWithoutSearchQueryShouldCallFindFriends(@Mock UserRepository userRepository) {
+    UserEntity userEntity = new UserEntity();
+    when(userRepository.findByUsername(mainTestUserName)).thenReturn(Optional.of(userEntity));
+    when(userRepository.findFriends(userEntity)).thenReturn(List.of());
+
+    userService = new UserService(userRepository);
+
+    userService.friends(mainTestUserName, null);
+
+    verify(userRepository, times(1)).findFriends(eq(userEntity));
+    verify(userRepository, never()).findFriends(eq(userEntity), anyString());
+  }
+
+  @Test
+  void friendsWithSearchQueryShouldCallFindFriendsWithQuery(@Mock UserRepository userRepository) {
+    String query = "emma";
+    UserEntity userEntity = new UserEntity();
+    when(userRepository.findByUsername(mainTestUserName)).thenReturn(Optional.of(userEntity));
+    when(userRepository.findFriends(userEntity, query)).thenReturn(List.of());
+
+    userService = new UserService(userRepository);
+
+    userService.friends(mainTestUserName, query);
+
+    verify(userRepository, times(1)).findFriends(eq(userEntity), eq(query));
+    verify(userRepository, never()).findFriends(eq(userEntity));
+  }
+
+  @Test
+  void pagedFriendsWithoutSearchQueryShouldCallFindFriendsPageable(@Mock UserRepository userRepository) {
+    Pageable pageable = PageRequest.of(0, 10);
+    UserEntity userEntity = new UserEntity();
+    when(userRepository.findByUsername(mainTestUserName)).thenReturn(Optional.of(userEntity));
+    when(userRepository.findFriends(userEntity, pageable)).thenReturn(Page.empty());
+
+    userService = new UserService(userRepository);
+
+    userService.friends(mainTestUserName, pageable, null);
+
+    verify(userRepository, times(1)).findFriends(eq(userEntity), eq(pageable));
+    verify(userRepository, never()).findFriends(eq(userEntity), anyString(), any(Pageable.class));
+  }
+
+  @Test
+  void pagedFriendsWithSearchQueryShouldCallFindFriendsWithQueryAndPageable(@Mock UserRepository userRepository) {
+    Pageable pageable = PageRequest.of(0, 10);
+    String query = "emma";
+    UserEntity userEntity = new UserEntity();
+    when(userRepository.findByUsername(mainTestUserName)).thenReturn(Optional.of(userEntity));
+    when(userRepository.findFriends(userEntity, query, pageable)).thenReturn(Page.empty());
+
+    userService = new UserService(userRepository);
+
+    userService.friends(mainTestUserName, pageable, query);
+
+    verify(userRepository, times(1)).findFriends(eq(userEntity), eq(query), eq(pageable));
+    verify(userRepository, never()).findFriends(eq(userEntity), eq(pageable));
   }
 
   private List<UserWithStatus> getMockUsersMappingFromDb() {
